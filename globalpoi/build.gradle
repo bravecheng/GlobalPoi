@@ -7,7 +7,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 26
         versionCode 1
-        versionName "1.0"
+        versionName "0.1.0"
     }
 
     buildTypes {
@@ -20,6 +20,18 @@ android {
 }
 
 dependencies {
-    compile 'com.squareup.okhttp3:okhttp:3.9.1'
-    compile 'com.alibaba:fastjson:1.1.68.android'
+    provided 'com.squareup.okhttp3:okhttp:3.9.1'
+    provided 'com.alibaba:fastjson:1.1.68.android'
+}
+
+
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    artifactId = 'GlobalPoiSearch'
+    userOrg = 'bravecheng'
+    groupId = 'mobi.chy'
+    publishVersion = '0.1.1'
+    desc = 'a useful android global poi search library.'
+    website = 'https://gitee.com/chyong/GlobalPoiDemo'
 }

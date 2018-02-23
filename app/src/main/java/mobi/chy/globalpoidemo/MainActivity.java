@@ -13,8 +13,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
-
-import mobi.chy.util.AmapPoi;
 import mobi.chy.util.GlobalPoi;
 import mobi.chy.util.GlobalPoiSearch;
 
