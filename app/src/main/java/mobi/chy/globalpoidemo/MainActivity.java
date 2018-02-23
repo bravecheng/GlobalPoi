@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.List;
+
 import mobi.chy.util.GlobalPoi;
 import mobi.chy.util.GlobalPoiSearch;
 
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
                     globalPoiSearch.setLatLng(lat, lng);
                     globalPoiSearch.searchAsyn();
                 } catch (NumberFormatException e) {
-                    Toast.makeText(MainActivity.this,"输入不合法",Toast.LENGTH_LONG).show();
+                    Toast.makeText(MainActivity.this, "输入不合法", Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -64,14 +65,13 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
 
     @Override
     public void onPoiSearchFailed(int errCode, String errDesc) {
-        Toast.makeText(MainActivity.this,errDesc,Toast.LENGTH_LONG).show();
+        Toast.makeText(MainActivity.this, errDesc, Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void onPoiSearchFinish() {
 
     }
-
 
 
     private class PoiListAdapter extends BaseAdapter {
@@ -109,7 +109,9 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
                 holder = (ViewHolder) view.getTag();
             }
             GlobalPoi itemPoi = (GlobalPoi) getItem(i);
-            holder.title.setText(itemPoi.getName());
+            holder.title.setText("[" + itemPoi.getLocation().getCountry() + "]-"
+                    + "[" + itemPoi.getLocation().getState() + "]-"
+                    + "[" + itemPoi.getLocation().getCity() + "]" + itemPoi.getName());
             holder.address.setText(itemPoi.getLocation().getAddress());
             return view;
         }

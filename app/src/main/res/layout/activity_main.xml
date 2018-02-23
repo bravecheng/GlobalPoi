@@ -16,6 +16,7 @@
             android:id="@+id/lat"
             android:layout_width="100dp"
             android:layout_height="40dp"
+            android:inputType="numberDecimal"
             android:text="31.815649" />
 
         <EditText
@@ -23,6 +24,7 @@
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:layout_marginLeft="20dp"
+            android:inputType="numberDecimal"
             android:text="117.187918" />
 
         <Button
