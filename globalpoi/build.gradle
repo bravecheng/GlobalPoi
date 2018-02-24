@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 12
-        versionName "0.1.2"
+        versionCode 13
+        versionName "0.1.3"
     }
 
     buildTypes {
@@ -29,13 +29,32 @@ dependencies {
     provided 'com.alibaba:fastjson:1.1.68.android'
 }
 
+//先清除存在的jar
+task clearJar(type: Delete) {
+    delete fileTree(dir: 'build/libs' , include: 'GlobalPoiSearch*.jar')
+}
+//makejar打包jar包
+task makeJar(type:org.gradle.api.tasks.bundling.Jar) {
+    //指定生成的jar名
+    baseName 'GlobalPoiSearch-0.1.0'
+    //从哪里打包class文件
+    from('build/intermediates/classes/release/mobi/chy/map/globalpoi/')
+    //打包到jar后的目录结构
+    into('mobi/chy/map/globalpoi')
+    //去掉不需要打包的目录和文件
+    exclude('BuildConfig.class', 'R.class',"MainActivity.class")
+    //去掉R$ 开头的文件
+    exclude{it.name.startsWith('R$');}
+}
+makeJar.dependsOn(clearJar, build)
+
 apply plugin: 'com.novoda.bintray-release'
 
 publish {
     artifactId = 'GlobalPoiSearch'
     userOrg = 'bravecheng'
     groupId = 'mobi.chy'
-    publishVersion = '0.1.2'
+    publishVersion = '0.1.3'
     desc = 'a useful android global poi search library.'
     website = 'https://chy.mobi'
     issueTracker = "https://gitee.com/chyong/GlobalPoiDemo/issues"
