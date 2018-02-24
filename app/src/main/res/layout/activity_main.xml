@@ -8,7 +8,7 @@
     <LinearLayout
         android:id="@+id/top"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="44dp"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -17,7 +17,9 @@
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:inputType="numberSigned|numberDecimal"
-            android:text="31.815649" />
+            android:lines="1"
+            android:text="31.815649"
+            android:hint="请输入纬度，例如 31.815649"/>
 
         <EditText
             android:id="@+id/lng"
@@ -25,12 +27,14 @@
             android:layout_height="40dp"
             android:layout_marginLeft="20dp"
             android:inputType="numberSigned|numberDecimal"
-            android:text="117.187918" />
+            android:lines="1"
+            android:text="117.187918"
+            android:hint="请输入经度，例如 117.187918"/>
 
         <Button
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="36dp"
             android:layout_marginLeft="20dp"
             android:text="搜索" />
     </LinearLayout>
@@ -38,22 +42,34 @@
     <LinearLayout
         android:id="@+id/secound"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="44dp"
         android:gravity="center"
         android:layout_below="@+id/top"
         android:orientation="horizontal">
 
         <EditText
             android:id="@+id/et_keyword"
-            android:layout_width="220dp"
+            android:layout_width="140dp"
             android:layout_height="40dp"
             android:inputType="text"
-            android:text="阳光电源" />
+            android:text="合肥市政府"
+            android:lines="1"
+            android:hint="请输入搜索关键字"/>
+
+        <EditText
+            android:id="@+id/city"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:inputType="text"
+            android:text="合肥市"
+            android:lines="1"
+            android:hint="请输入城市名或者citycode/adcode"/>
 
         <Button
             android:id="@+id/btn_keyword"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="36dp"
             android:layout_marginLeft="20dp"
             android:text="搜索" />
     </LinearLayout>
