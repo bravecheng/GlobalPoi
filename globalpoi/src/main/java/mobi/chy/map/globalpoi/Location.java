@@ -10,6 +10,7 @@ public class Location {
     private double lng;
     private String address;
     private String postalCode;
+    private String citycode = "";
     private String city;
     private String state;
     private String country;
@@ -44,6 +45,14 @@ public class Location {
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public String getCitycode() {
+        return citycode;
+    }
+
+    public void setCitycode(String citycode) {
+        this.citycode = citycode;
     }
 
     public String getCity() {

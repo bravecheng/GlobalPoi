@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
     private EditText etLat;
     private EditText etLng;
     private Button btnSearch;
+    private EditText etKeyword;
+    private Button btnKeyword;
     private ListView lvPoi;
     GlobalPoiSearch globalPoiSearch;
     PoiListAdapter mAdapter;
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
         setContentView(R.layout.activity_main);
         etLat = findViewById(R.id.lat);
         etLng = findViewById(R.id.lng);
+        etKeyword = findViewById(R.id.et_keyword);
+        btnKeyword = findViewById(R.id.btn_keyword);
         btnSearch = findViewById(R.id.btn_search);
         lvPoi = findViewById(R.id.lv_poi);
 
@@ -48,11 +52,17 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
                 try {
                     double lat = Double.parseDouble(etLat.getText().toString());
                     double lng = Double.parseDouble(etLng.getText().toString());
-                    globalPoiSearch.setLatLng(lat, lng);
-                    globalPoiSearch.searchAsyn();
+                    globalPoiSearch.searchLatLngAsyn(lat, lng);
                 } catch (NumberFormatException e) {
                     Toast.makeText(MainActivity.this, "输入不合法", Toast.LENGTH_LONG).show();
                 }
+            }
+        });
+
+        btnKeyword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalPoiSearch.searchKeywordsAsyn(etKeyword.getText().toString(),"合肥市",1);
             }
         });
     }

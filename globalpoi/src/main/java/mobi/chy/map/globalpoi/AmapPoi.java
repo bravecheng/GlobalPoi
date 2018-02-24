@@ -7,6 +7,7 @@ public class AmapPoi {
     private String name;
     private String address;
     private String location;
+    private String citycode;
     private String cityname;
     private String pname;
     private String adcode;
@@ -41,6 +42,14 @@ public class AmapPoi {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getCitycode() {
+        return citycode;
+    }
+
+    public void setCitycode(String citycode) {
+        this.citycode = citycode;
     }
 
     public String getCityname() {

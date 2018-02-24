@@ -16,7 +16,7 @@
             android:id="@+id/lat"
             android:layout_width="100dp"
             android:layout_height="40dp"
-            android:inputType="numberDecimal"
+            android:inputType="numberSigned|numberDecimal"
             android:text="31.815649" />
 
         <EditText
@@ -24,7 +24,7 @@
             android:layout_width="100dp"
             android:layout_height="40dp"
             android:layout_marginLeft="20dp"
-            android:inputType="numberDecimal"
+            android:inputType="numberSigned|numberDecimal"
             android:text="117.187918" />
 
         <Button
@@ -35,10 +35,33 @@
             android:text="搜索" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/secound"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center"
+        android:layout_below="@+id/top"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_keyword"
+            android:layout_width="220dp"
+            android:layout_height="40dp"
+            android:inputType="text"
+            android:text="阳光电源" />
+
+        <Button
+            android:id="@+id/btn_keyword"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:text="搜索" />
+    </LinearLayout>
+
     <ListView
         android:id="@+id/lv_poi"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/top" />
+        android:layout_below="@+id/secound" />
 
 </RelativeLayout>

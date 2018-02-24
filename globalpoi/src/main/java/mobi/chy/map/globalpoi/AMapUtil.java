@@ -27,6 +27,39 @@ public class AMapUtil {
     private static final String BASE_URL = "https://restapi.amap.com/v3/place/around?";
     private static String SHA1_VALUE;
 
+    public static String getRequestUrl(Context context, String keywords, String city, int page){
+        String amapKey;
+        try {
+            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+            amapKey = appInfo.metaData.getString("com.amap.api.v2.apikey");
+        } catch (PackageManager.NameNotFoundException e) {
+            amapKey = "ERROR_KEY";
+        }
+        TreeMap<String, String> tm = new TreeMap<>();
+        tm.put("output", "json");
+        tm.put("sortrule", "distance");
+        tm.put("offset", "20");
+        tm.put("extensions", "all");
+        tm.put("citylimit", "false");
+        tm.put("children", "0");
+        tm.put("language", "zh-CN");
+        tm.put("keywords", keywords);
+        if (!TextUtils.isEmpty(city)) {
+            tm.put("city", city);
+        }
+        tm.put("page", "" + page);
+        tm.put("key", "" + amapKey);
+        //生成ts 倒数第1位0~9，倒数第2位0~1
+        String ts = System.currentTimeMillis() + "";
+        Random random = new Random();
+        ts = ts.substring(0, ts.length() - 2) + random.nextInt(2) + random.nextInt(10);
+        //计算scode
+        String scode = getMD5(getSha1(context) + ":" + context.getPackageName() + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
+        tm.put("ts", ts);
+        tm.put("scode", scode);
+        return BASE_URL + treeMapStr(tm);
+    }
+
     public static String getRequestUrl(Context context, double lat, double lng, int radius) {
         String amapKey;
         try {
@@ -37,7 +70,6 @@ public class AMapUtil {
         }
         TreeMap<String, String> tm = new TreeMap<>();
         tm.put("output", "json");
-        tm.put("radius", "" + radius);
         tm.put("types","200000|200000|160000|140000|130000|120000|110000|100000|090000|080000|060000|050000|030000|020000|010000");
         tm.put("sortrule", "distance");
         tm.put("offset", "30");
@@ -45,8 +77,9 @@ public class AMapUtil {
         tm.put("citylimit", "false");
         tm.put("children", "0");
         tm.put("language", "zh-CN");
-        tm.put("location", lat + "," + lng);
         tm.put("page", "1");
+        tm.put("radius", "" + radius);
+        tm.put("location", lat + "," + lng);
         tm.put("key", "" + amapKey);
         //生成ts 倒数第1位0~9，倒数第2位0~1
         String ts = System.currentTimeMillis() + "";
