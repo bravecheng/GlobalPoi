@@ -24,7 +24,7 @@ public class AMapUtil {
 
     private AMapUtil(){}
 
-    private static final String AROUND_URL = "https://restapi.amap.com/v3/place/around?";
+    private static final String AROUND_URL = "http://restapi.amap.com/v3/place/around?";
     private static final String TEXT_URL = "http://restapi.amap.com/v3/place/text?";
     private static String SHA1_VALUE;
 
