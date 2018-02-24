@@ -57,4 +57,6 @@ publish {
     publishVersion = '0.1.1'
     desc = 'a useful android global poi search library.'
     website = 'https://chy.mobi'
+    issueTracker = "https://gitee.com/chyong/GlobalPoiDemo/issues"
+    repository = "https://gitee.com/chyong/GlobalPoiDemo.git"
 }
