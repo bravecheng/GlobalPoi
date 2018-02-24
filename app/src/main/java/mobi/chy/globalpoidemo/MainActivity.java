@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
     private EditText etLng;
     private Button btnSearch;
     private EditText etKeyword;
+    private EditText etCity;
     private Button btnKeyword;
     private ListView lvPoi;
     GlobalPoiSearch globalPoiSearch;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
         etLat = findViewById(R.id.lat);
         etLng = findViewById(R.id.lng);
         etKeyword = findViewById(R.id.et_keyword);
+        etCity = findViewById(R.id.et_city);
         btnKeyword = findViewById(R.id.btn_keyword);
         btnSearch = findViewById(R.id.btn_search);
         lvPoi = findViewById(R.id.lv_poi);
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
         btnKeyword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                globalPoiSearch.searchKeywordsAsyn(etKeyword.getText().toString(),"0551",1);
+                globalPoiSearch.searchKeywordsAsyn(etKeyword.getText().toString(),etCity.getText().toString(),1);
             }
         });
     }

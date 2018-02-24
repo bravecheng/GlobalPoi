@@ -57,7 +57,7 @@
             android:hint="请输入搜索关键字"/>
 
         <EditText
-            android:id="@+id/city"
+            android:id="@+id/et_city"
             android:layout_width="60dp"
             android:layout_height="40dp"
             android:layout_marginLeft="20dp"
