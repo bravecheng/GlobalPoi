@@ -1,0 +1,24 @@
+apply plugin: 'java-library'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.squareup.okhttp3:okhttp:3.9.1'
+    implementation 'com.alibaba:fastjson:1.1.68.android'
+}
+
+sourceCompatibility = "1.8"
+targetCompatibility = "1.8"
+
+
+apply plugin: 'com.novoda.bintray-release'
+
+publish {
+    artifactId = 'GlobalPoiSearch'
+    userOrg = 'bravecheng'
+    groupId = 'mobi.chy'
+    publishVersion = '0.1.4'
+    desc = 'a useful android global poi search library.'
+    website = 'https://chy.mobi'
+    issueTracker = "https://gitee.com/chyong/GlobalPoiDemo/issues"
+    repository = "https://gitee.com/chyong/GlobalPoiDemo.git"
+}

@@ -1,1 +1,1 @@
-include ':app', ':globalpoi'
+include ':app', ':globalpoi', ':globalpoisearch'
