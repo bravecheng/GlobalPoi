@@ -56,5 +56,5 @@ publish {
     groupId = 'mobi.chy'
     publishVersion = '0.1.1'
     desc = 'a useful android global poi search library.'
-    website = 'https://gitee.com/chyong/GlobalPoiDemo'
+    website = 'https://chy.mobi'
 }
