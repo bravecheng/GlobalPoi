@@ -42,7 +42,7 @@ task makeJar(type:org.gradle.api.tasks.bundling.Jar) {
     //打包到jar后的目录结构
     into('mobi/chy/map/globalpoi')
     //去掉不需要打包的目录和文件
-    exclude('BuildConfig.class', 'R.class',"MainActivity.class")
+    exclude('BuildConfig.class', 'R.class')
     //去掉R$ 开头的文件
     exclude{it.name.startsWith('R$');}
 }
