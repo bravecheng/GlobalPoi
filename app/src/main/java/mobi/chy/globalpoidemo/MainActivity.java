@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
-import mobi.chy.util.GlobalPoi;
-import mobi.chy.util.GlobalPoiSearch;
+import mobi.chy.map.globalpoi.GlobalPoi;
+import mobi.chy.map.globalpoi.GlobalPoiSearch;
 
 public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.PoiSearchListener {
 

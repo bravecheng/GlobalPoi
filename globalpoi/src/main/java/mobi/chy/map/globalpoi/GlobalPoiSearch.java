@@ -1,4 +1,4 @@
-package mobi.chy.util;
+package mobi.chy.map.globalpoi;
 
 import android.content.Context;
 import android.os.Handler;
