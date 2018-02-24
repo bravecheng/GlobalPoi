@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
         btnKeyword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                globalPoiSearch.searchKeywordsAsyn(etKeyword.getText().toString(),"合肥市",1);
+                globalPoiSearch.searchKeywordsAsyn(etKeyword.getText().toString(),"0551",1);
             }
         });
     }

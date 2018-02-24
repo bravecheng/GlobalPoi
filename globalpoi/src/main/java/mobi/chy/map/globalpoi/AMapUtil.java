@@ -24,7 +24,8 @@ public class AMapUtil {
 
     private AMapUtil(){}
 
-    private static final String BASE_URL = "https://restapi.amap.com/v3/place/around?";
+    private static final String AROUND_URL = "https://restapi.amap.com/v3/place/around?";
+    private static final String TEXT_URL = "http://restapi.amap.com/v3/place/text?";
     private static String SHA1_VALUE;
 
     public static String getRequestUrl(Context context, String keywords, String city, int page){
@@ -57,7 +58,7 @@ public class AMapUtil {
         String scode = getMD5(getSha1(context) + ":" + context.getPackageName() + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
         tm.put("ts", ts);
         tm.put("scode", scode);
-        return BASE_URL + treeMapStr(tm);
+        return TEXT_URL + treeMapStr(tm);
     }
 
     public static String getRequestUrl(Context context, double lat, double lng, int radius) {
@@ -89,7 +90,7 @@ public class AMapUtil {
         String scode = getMD5(getSha1(context) + ":" + context.getPackageName() + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
         tm.put("ts", ts);
         tm.put("scode", scode);
-        return BASE_URL + treeMapStr(tm);
+        return AROUND_URL + treeMapStr(tm);
     }
 
     /**
