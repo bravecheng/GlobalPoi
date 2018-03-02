@@ -14,6 +14,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mobi.chy.map.globalpoi.entity.AmapPoi;
+import mobi.chy.map.globalpoi.entity.GlobalPoi;
+import mobi.chy.map.globalpoi.entity.Location;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;

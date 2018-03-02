@@ -6,8 +6,9 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 14
-        versionName "0.1.4"
+        versionCode 17
+        versionName "0.1.7"
+        consumerProguardFiles 'proguard-rules.pro'
     }
 
     buildTypes {
@@ -17,7 +18,7 @@ android {
         }
 
         release {
-            minifyEnabled true
+            minifyEnabled false
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

@@ -1,4 +1,4 @@
-package mobi.chy.map.globalpoi;
+package mobi.chy.map.globalpoi.entity;
 
 
 public class AmapPoi {

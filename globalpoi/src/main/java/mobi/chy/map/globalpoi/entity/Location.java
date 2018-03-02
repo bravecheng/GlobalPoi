@@ -1,4 +1,4 @@
-package mobi.chy.map.globalpoi;
+package mobi.chy.map.globalpoi.entity;
 
 /**
  * Created by @author chengyong on 2018/2/23.
