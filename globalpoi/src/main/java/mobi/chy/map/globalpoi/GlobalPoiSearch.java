@@ -3,20 +3,11 @@ package mobi.chy.map.globalpoi;
 import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
-
-import com.alibaba.fastjson.JSON;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
-
-import mobi.chy.map.globalpoi.entity.AmapPoi;
 import mobi.chy.map.globalpoi.entity.GlobalPoi;
-import mobi.chy.map.globalpoi.entity.Location;
 import mobi.chy.map.globalpoi.util.AMapUtil;
 import mobi.chy.map.globalpoi.util.FoursquareUtil;
 import mobi.chy.map.globalpoi.util.LbsTool;
@@ -104,7 +95,6 @@ public class GlobalPoiSearch {
     private void searchKeywords(String keywords, String city, int page) {
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = AMapUtil.getKeywordsUrl(context, keywords, city, page);
-        Log.e("AMap request", url);
         Request request = new Request.Builder().url(url).method("GET", null).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
@@ -124,7 +114,6 @@ public class GlobalPoiSearch {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String result = response.body().string();
-                Log.e("AMap response", result);
                 try {
                     JSONObject jsonResult = new JSONObject(result);
                     int responseCode = 0;
@@ -137,25 +126,7 @@ public class GlobalPoiSearch {
                     }
                     //状态码 = 200 表示可用
                     if (responseCode == 10000 && jsonResult.has("pois") && listener != null) {
-                        List<AmapPoi> pois = JSON.parseArray(jsonResult.optString("pois"), AmapPoi.class);
-                        final ArrayList<GlobalPoi> poiList = new ArrayList<>();
-                        //将AmapPoi转换为GlobalPoi
-                        for (AmapPoi amap : pois) {
-                            GlobalPoi globalPoi = new GlobalPoi();
-                            globalPoi.setId(amap.getId());
-                            globalPoi.setName(amap.getName());
-                            Location location = new Location();
-                            location.setAddress(amap.getAddress());
-                            location.setCitycode(amap.getCitycode());
-                            location.setCity(amap.getCityname());
-                            location.setState(amap.getPname());
-                            location.setCountry("中国");
-                            location.setPostalCode(amap.getAdcode());
-                            location.setLat(amap.getLatitude());
-                            location.setLng(amap.getLongitude());
-                            globalPoi.setLocation(location);
-                            poiList.add(globalPoi);
-                        }
+                        final List<GlobalPoi> poiList = GlobalPoi.getBeanFromAmap(jsonResult.optString("pois"));
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -188,7 +159,6 @@ public class GlobalPoiSearch {
     private void getAMapPoi(double lat, double lng, int radius) {
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = AMapUtil.getLatLngUrl(context, lat, lng, radius);
-        Log.e("AMap request", url);
         Request request = new Request.Builder().url(url).method("GET", null).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
@@ -208,7 +178,6 @@ public class GlobalPoiSearch {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String result = response.body().string();
-                Log.e("AMap response", result);
                 try {
                     JSONObject jsonResult = new JSONObject(result);
                     int responseCode = 0;
@@ -221,25 +190,7 @@ public class GlobalPoiSearch {
                     }
                     //状态码 = 200 表示可用
                     if (responseCode == 10000 && jsonResult.has("pois") && listener != null) {
-                        List<AmapPoi> pois = JSON.parseArray(jsonResult.optString("pois"), AmapPoi.class);
-                        final ArrayList<GlobalPoi> poiList = new ArrayList<>();
-                        //将AmapPoi转换为GlobalPoi
-                        for (AmapPoi amap : pois) {
-                            GlobalPoi globalPoi = new GlobalPoi();
-                            globalPoi.setId(amap.getId());
-                            globalPoi.setName(amap.getName());
-                            Location location = new Location();
-                            location.setAddress(amap.getAddress());
-                            location.setCitycode(amap.getCitycode());
-                            location.setCity(amap.getCityname());
-                            location.setState(amap.getPname());
-                            location.setCountry("中国");
-                            location.setPostalCode(amap.getAdcode());
-                            location.setLat(amap.getLatitude());
-                            location.setLng(amap.getLongitude());
-                            globalPoi.setLocation(location);
-                            poiList.add(globalPoi);
-                        }
+                        final List<GlobalPoi> poiList = GlobalPoi.getBeanFromAmap(jsonResult.optString("pois"));
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
@@ -272,7 +223,6 @@ public class GlobalPoiSearch {
     private void getFoursquareVenues(double lat, double lng, int radius) {
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = FoursquareUtil.getLatLngUrl(context, lat, lng, radius);
-        Log.e("Foursquare request", url);
         Request request = new Request.Builder().url(url).method("GET", null).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
@@ -292,7 +242,6 @@ public class GlobalPoiSearch {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String result = response.body().string();
-                Log.e("Foursquare response", result);
                 try {
                     JSONObject jsonResult = new JSONObject(result);
                     int responseCode = 0;
@@ -309,7 +258,7 @@ public class GlobalPoiSearch {
                     //状态码 = 200 表示可用
                     if (responseCode == 200 && jsonResult.has("response") && listener != null) {
                         JSONObject jsonResponse = jsonResult.getJSONObject("response");
-                        final List<GlobalPoi> poiList = JSON.parseArray(jsonResponse.optString("venues"), GlobalPoi.class);
+                        final List<GlobalPoi> poiList = GlobalPoi.getBeanFromFoursquare(jsonResponse.optString("venues"));
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {

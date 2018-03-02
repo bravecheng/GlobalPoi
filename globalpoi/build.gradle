@@ -6,21 +6,14 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 17
-        versionName "0.1.7"
+        versionCode 18
+        versionName "0.1.8"
         consumerProguardFiles 'proguard-rules.pro'
     }
 
     buildTypes {
-        debug {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-
         release {
             minifyEnabled false
-            zipAlignEnabled true
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 
@@ -28,7 +21,6 @@ android {
 
 dependencies {
     provided 'com.squareup.okhttp3:okhttp:3.9.1'
-    provided 'com.alibaba:fastjson:1.1.68.android'
 }
 
 apply plugin: 'com.novoda.bintray-release'
