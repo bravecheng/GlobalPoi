@@ -1,4 +1,4 @@
-package mobi.chy.map.globalpoi;
+package mobi.chy.map.globalpoi.util;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -14,7 +14,7 @@ public class FoursquareUtil {
 
     private static final String BASE_URL = "https://api.foursquare.com/v2/venues/search?v=20161016";
 
-    public static String getRequestUrl(Context context, double lat, double lng, int radius){
+    public static String getLatLngUrl(Context context, double lat, double lng, int radius){
         String clientId,clientSecret;
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);

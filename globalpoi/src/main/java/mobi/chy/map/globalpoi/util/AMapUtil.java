@@ -1,4 +1,4 @@
-package mobi.chy.map.globalpoi;
+package mobi.chy.map.globalpoi.util;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -28,7 +28,7 @@ public class AMapUtil {
     private static final String TEXT_URL = "http://restapi.amap.com/v3/place/text?";
     private static String SHA1_VALUE;
 
-    public static String getRequestUrl(Context context, String keywords, String city, int page){
+    public static String getKeywordsUrl(Context context, String keywords, String city, int page){
         String amapKey;
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
@@ -61,7 +61,7 @@ public class AMapUtil {
         return TEXT_URL + treeMapStr(tm);
     }
 
-    public static String getRequestUrl(Context context, double lat, double lng, int radius) {
+    public static String getLatLngUrl(Context context, double lat, double lng, int radius) {
         String amapKey;
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);

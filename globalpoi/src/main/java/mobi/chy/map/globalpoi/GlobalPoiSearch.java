@@ -17,6 +17,9 @@ import java.util.List;
 import mobi.chy.map.globalpoi.entity.AmapPoi;
 import mobi.chy.map.globalpoi.entity.GlobalPoi;
 import mobi.chy.map.globalpoi.entity.Location;
+import mobi.chy.map.globalpoi.util.AMapUtil;
+import mobi.chy.map.globalpoi.util.FoursquareUtil;
+import mobi.chy.map.globalpoi.util.LbsTool;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.OkHttpClient;
@@ -100,7 +103,7 @@ public class GlobalPoiSearch {
 
     private void searchKeywords(String keywords, String city, int page) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        String url = AMapUtil.getRequestUrl(context, keywords, city, page);
+        String url = AMapUtil.getKeywordsUrl(context, keywords, city, page);
         Log.e("AMap request", url);
         Request request = new Request.Builder().url(url).method("GET", null).build();
         Call call = okHttpClient.newCall(request);
@@ -184,7 +187,7 @@ public class GlobalPoiSearch {
      */
     private void getAMapPoi(double lat, double lng, int radius) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        String url = AMapUtil.getRequestUrl(context, lat, lng, radius);
+        String url = AMapUtil.getLatLngUrl(context, lat, lng, radius);
         Log.e("AMap request", url);
         Request request = new Request.Builder().url(url).method("GET", null).build();
         Call call = okHttpClient.newCall(request);
@@ -268,7 +271,7 @@ public class GlobalPoiSearch {
      */
     private void getFoursquareVenues(double lat, double lng, int radius) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        String url = FoursquareUtil.getRequestUrl(context, lat, lng, radius);
+        String url = FoursquareUtil.getLatLngUrl(context, lat, lng, radius);
         Log.e("Foursquare request", url);
         Request request = new Request.Builder().url(url).method("GET", null).build();
         Call call = okHttpClient.newCall(request);

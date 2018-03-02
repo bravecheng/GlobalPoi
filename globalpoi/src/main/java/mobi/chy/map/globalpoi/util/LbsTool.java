@@ -1,4 +1,4 @@
-package mobi.chy.map.globalpoi;
+package mobi.chy.map.globalpoi.util;
 
 /**
  * @author ondear
@@ -12,22 +12,6 @@ public class LbsTool {
     public static double pi = 3.1415926535897932384626;
     public static double a = 6378245.0;
     public static double ee = 0.00669342162296594323;
-
-    /**
-     * [国测局坐标系] 火星坐标系 (GCJ-02)
-     * 转换成
-     * 国际 WGS84 坐标系
-     *
-     * @param lon 火星经度
-     * @param lat 火星纬度
-     */
-    public static double[] GCJ02ToWGS84(double lon, double lat) {
-        double[] gps = transform(lon, lat);
-        double lontitude = lon * 2 - gps[1];
-        double latitude = lat * 2 - gps[0];
-        return new double[]{latitude, lontitude};
-    }
-
     /**
      * 不在中国范围内
      *
@@ -66,62 +50,5 @@ public class LbsTool {
             return false;
         }
         return true;
-    }
-
-    /**
-     * 转化算法
-     *
-     * @param lon
-     * @param lat
-     * @return
-     */
-    public static double[] transform(double lon, double lat) {
-        if (!isInChina(lon, lat)) {
-            return new double[]{lat, lon};
-        }
-        double dLat = transformLat(lon - 105.0, lat - 35.0);
-        double dLon = transformLon(lon - 105.0, lat - 35.0);
-        double radLat = lat / 180.0 * pi;
-        double magic = Math.sin(radLat);
-        magic = 1 - ee * magic * magic;
-        double sqrtMagic = Math.sqrt(magic);
-        dLat = (dLat * 180.0) / ((a * (1 - ee)) / (magic * sqrtMagic) * pi);
-        dLon = (dLon * 180.0) / (a / sqrtMagic * Math.cos(radLat) * pi);
-        double mgLat = lat + dLat;
-        double mgLon = lon + dLon;
-        return new double[]{mgLat, mgLon};
-    }
-
-    /**
-     * 纬度转化算法
-     *
-     * @param x
-     * @param y
-     * @return
-     */
-    private static double transformLat(double x, double y) {
-        double ret = -100.0 + 2.0 * x + 3.0 * y + 0.2 * y * y + 0.1 * x * y
-                + 0.2 * Math.sqrt(Math.abs(x));
-        ret += (20.0 * Math.sin(6.0 * x * pi) + 20.0 * Math.sin(2.0 * x * pi)) * 2.0 / 3.0;
-        ret += (20.0 * Math.sin(y * pi) + 40.0 * Math.sin(y / 3.0 * pi)) * 2.0 / 3.0;
-        ret += (160.0 * Math.sin(y / 12.0 * pi) + 320 * Math.sin(y * pi / 30.0)) * 2.0 / 3.0;
-        return ret;
-    }
-
-    /**
-     * 经度转化算法
-     *
-     * @param x
-     * @param y
-     * @return
-     */
-    private static double transformLon(double x, double y) {
-        double ret = 300.0 + x + 2.0 * y + 0.1 * x * x + 0.1 * x * y + 0.1
-                * Math.sqrt(Math.abs(x));
-        ret += (20.0 * Math.sin(6.0 * x * pi) + 20.0 * Math.sin(2.0 * x * pi)) * 2.0 / 3.0;
-        ret += (20.0 * Math.sin(x * pi) + 40.0 * Math.sin(x / 3.0 * pi)) * 2.0 / 3.0;
-        ret += (150.0 * Math.sin(x / 12.0 * pi) + 300.0 * Math.sin(x / 30.0
-                * pi)) * 2.0 / 3.0;
-        return ret;
     }
 }
