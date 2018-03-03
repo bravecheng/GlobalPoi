@@ -39,5 +39,5 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.squareup.okhttp3:okhttp:3.9.1'
-    compile 'mobi.chy:GlobalPoiSearch:0.1.8'
+    compile 'mobi.chy:GlobalPoiSearch:0.1.9'
 }
