@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion 14
         targetSdkVersion 26
-        versionCode 18
-        versionName "0.1.9"
+        versionCode 20
+        versionName "0.2.0"
         consumerProguardFiles 'proguard-rules.pro'
     }
 
