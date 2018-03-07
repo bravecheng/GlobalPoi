@@ -1,5 +1,5 @@
 # GlobalPoi
-Global Poi Search
+[ ![Download](https://api.bintray.com/packages/bravecheng/maven/GlobalPoiSearch/images/download.svg) ](https://bintray.com/bravecheng/maven/GlobalPoiSearch/_latestVersion)
 
 ## How to used
 
