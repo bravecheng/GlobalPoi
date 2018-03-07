@@ -13,7 +13,7 @@ android {
     //签名信息
     signingConfigs {
         release {
-            storeFile file("../mapboxDemo.jks")
+            storeFile file("../bingMapDemo.jks")
             storePassword "bingMapDemo"
             keyAlias "bingMapDemo"
             keyPassword "bingMapDemo"
