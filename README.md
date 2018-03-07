@@ -5,8 +5,8 @@ Global Poi Search
 
 ### 1. You need to register AMap key & Foursquare App.  
 
-go to AMap Key.  
-go to Foursquare App.  
+go to [AMap Console](http://lbs.amap.com/dev/).  
+go to [Foursquare Developers](https://foursquare.com/developers/apps).  
 
 ### 2. Add gradle dependency.
 ```xml
