@@ -1,6 +1,8 @@
 package mobi.chy.map.globalpoi.entity;
 
 /**
+ * 国内 GCJ02坐标，国外 WGS84坐标
+ * <p>
  * Created by @author chengyong on 2018/2/23.
  */
 

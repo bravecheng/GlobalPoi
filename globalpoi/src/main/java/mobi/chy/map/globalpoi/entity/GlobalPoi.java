@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 全球Poi搜索，国内传入GCJ02坐标，国外传入WGS84坐标，返回数据坐标同传入坐标
+ * 周边兴趣点，包含名称和位置信息
  * <p>
  * Created by @author chengyong on 2018/2/12.
  */
