@@ -10,7 +10,7 @@ go to [Foursquare Developers](https://foursquare.com/developers/apps).
 
 ### 2. Add gradle dependency.
 ```xml
-compile 'mobi.chy:GlobalPoiSearch:0.2.1'
+compile 'mobi.chy:GlobalPoiSearch:0.2.2'
 ```
 
 ### 3. Add the corresponding key in the manifest file.
