@@ -15,7 +15,7 @@ import java.util.Random;
 import java.util.TreeMap;
 
 /**
- * 高德地图POI搜索签名工具
+ * 高德工具类
  * <p>
  * Created by @author chengyong on 2018/2/3.
  */

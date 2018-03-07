@@ -5,6 +5,8 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 
 /**
+ * Foursuqare工具类
+ *
  * Created by @author chengyong on 2018/2/23.
  */
 

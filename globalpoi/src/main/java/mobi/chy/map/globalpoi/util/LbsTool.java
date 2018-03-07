@@ -1,9 +1,9 @@
 package mobi.chy.map.globalpoi.util;
 
 /**
- * @author ondear
- *         time  : 16/11/13
- *         desc  : 定位相关工具类
+ * 点判断工具类，判断是否在中国
+ *
+ * Created by @author chengyong on 2018/3/1.
  */
 public class LbsTool {
 

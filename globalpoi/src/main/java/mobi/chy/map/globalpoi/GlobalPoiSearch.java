@@ -18,7 +18,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * 全球POI搜索
+ * 全球POI搜索，包含点位搜索和关键字搜索
  * <p>
  * Created by @author chengyong on 2018/2/23.
  */
