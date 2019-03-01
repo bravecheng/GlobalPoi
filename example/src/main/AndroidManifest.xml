@@ -22,7 +22,7 @@
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="872340788d5d8548c910e50b3488e2e5" />
+            android:value="66774760b0a9ce1fd8cc052f0619bc0c" />
         <meta-data
             android:name="FOURSQUARE_CLIENT_ID"
             android:value="TESBVHX5NCPPLUO51RZ15IVXZITDSFTXXEWHQ2UGTEP5VGB3" />
