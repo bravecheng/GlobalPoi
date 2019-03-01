@@ -5,7 +5,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
@@ -26,16 +25,20 @@ public class AMapUtil {
 
     private static final String AROUND_URL = "http://restapi.amap.com/v3/place/around?";
     private static final String TEXT_URL = "http://restapi.amap.com/v3/place/text?";
-    private static String SHA1_VALUE;
+    private static String SHA1_VALUE, PKG_NAME, AMAP_KEY;
+
+    public static boolean init(Context context){
+        try {
+            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(getPkgName(context), PackageManager.GET_META_DATA);
+            AMAP_KEY = appInfo.metaData.getString("com.amap.api.v2.apikey");
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+            AMAP_KEY = "ERROR_KEY";
+            return false;
+        }
+    }
 
     public static String getKeywordsUrl(Context context, String keywords, String city, int page){
-        String amapKey;
-        try {
-            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-            amapKey = appInfo.metaData.getString("com.amap.api.v2.apikey");
-        } catch (PackageManager.NameNotFoundException e) {
-            amapKey = "ERROR_KEY";
-        }
         TreeMap<String, String> tm = new TreeMap<>();
         tm.put("output", "json");
         tm.put("sortrule", "distance");
@@ -49,32 +52,25 @@ public class AMapUtil {
             tm.put("city", city);
         }
         tm.put("page", "" + page);
-        tm.put("key", "" + amapKey);
+        tm.put("key", "" + AMAP_KEY);
         //生成ts 倒数第1位0~9，倒数第2位0~1
         String ts = System.currentTimeMillis() + "";
         Random random = new Random();
         ts = ts.substring(0, ts.length() - 2) + random.nextInt(2) + random.nextInt(10);
         //计算scode
-        String scode = getMD5(getSha1(context) + ":" + context.getPackageName() + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
+        String scode = getMD5(getSha1(context) + ":" + getPkgName(context) + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
         tm.put("ts", ts);
         tm.put("scode", scode);
         return TEXT_URL + treeMapStr(tm);
     }
 
     public static String getLatLngUrl(Context context, double lat, double lng, int radius) {
-        String amapKey;
-        try {
-            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-            amapKey = appInfo.metaData.getString("com.amap.api.v2.apikey");
-        } catch (PackageManager.NameNotFoundException e) {
-            amapKey = "ERROR_KEY";
-        }
         TreeMap<String, String> tm = new TreeMap<>();
         tm.put("output", "json");
         //主要显示大型地点，例如商场、公司、银行、加油站、大型餐厅、政府机关、医院等等
         tm.put("types","010100|050100|050200|060100|070400|070500|070600|080100|080600|090100|100100|110000|120000|130100|130500|140000|150104|150200|150300|160100|160400|170000|180200|180300");
         tm.put("sortrule", "distance");
-        tm.put("offset", "30");
+        tm.put("offset", "20");
         tm.put("extensions", "all");
         tm.put("citylimit", "false");
         tm.put("children", "0");
@@ -82,13 +78,13 @@ public class AMapUtil {
         tm.put("page", "1");
         tm.put("radius", "" + radius);
         tm.put("location", lat + "," + lng);
-        tm.put("key", "" + amapKey);
+        tm.put("key", "" + AMAP_KEY);
         //生成ts 倒数第1位0~9，倒数第2位0~1
         String ts = System.currentTimeMillis() + "";
         Random random = new Random();
         ts = ts.substring(0, ts.length() - 2) + random.nextInt(2) + random.nextInt(10);
         //计算scode
-        String scode = getMD5(getSha1(context) + ":" + context.getPackageName() + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
+        String scode = getMD5(getSha1(context) + ":" + getPkgName(context) + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
         tm.put("ts", ts);
         tm.put("scode", scode);
         return AROUND_URL + treeMapStr(tm);
@@ -152,29 +148,35 @@ public class AMapUtil {
         }
     }
 
-    public static String getSha1(Context context) {
-        if (!TextUtils.isEmpty(SHA1_VALUE)) {
-            return SHA1_VALUE;
+    public static String getPkgName(Context context) {
+        if (TextUtils.isEmpty(PKG_NAME)) {
+            PKG_NAME = context.getPackageName();
         }
-        try {
-            PackageInfo info = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_SIGNATURES);
-            byte[] cert = info.signatures[0].toByteArray();
-            MessageDigest md = MessageDigest.getInstance("SHA1");
-            byte[] publicKey = md.digest(cert);
-            StringBuffer hexString = new StringBuffer();
-            for (int i = 0; i < publicKey.length; i++) {
-                String appendString = Integer.toHexString(0xFF & publicKey[i]).toUpperCase(Locale.US);
-                if (appendString.length() == 1) {
-                    hexString.append("0");
+        return PKG_NAME;
+    }
+
+    public static String getSha1(Context context) {
+        if (TextUtils.isEmpty(SHA1_VALUE)) {
+            try {
+                PackageInfo info = context.getPackageManager().getPackageInfo(getPkgName(context), PackageManager.GET_SIGNATURES);
+                byte[] cert = info.signatures[0].toByteArray();
+                MessageDigest md = MessageDigest.getInstance("SHA1");
+                byte[] publicKey = md.digest(cert);
+                StringBuffer hexString = new StringBuffer();
+                for (int i = 0; i < publicKey.length; i++) {
+                    String appendString = Integer.toHexString(0xFF & publicKey[i]).toUpperCase(Locale.US);
+                    if (appendString.length() == 1) {
+                        hexString.append("0");
+                    }
+                    hexString.append(appendString);
+                    hexString.append(":");
                 }
-                hexString.append(appendString);
-                hexString.append(":");
+                SHA1_VALUE = hexString.substring(0, hexString.length()-1);
+            } catch (PackageManager.NameNotFoundException e) {
+                SHA1_VALUE = "";
+            } catch (NoSuchAlgorithmException e) {
+                SHA1_VALUE = "";
             }
-            SHA1_VALUE = hexString.substring(0, hexString.length()-1);
-        } catch (PackageManager.NameNotFoundException e) {
-            SHA1_VALUE = "";
-        } catch (NoSuchAlgorithmException e) {
-            SHA1_VALUE = "";
         }
         return SHA1_VALUE;
     }

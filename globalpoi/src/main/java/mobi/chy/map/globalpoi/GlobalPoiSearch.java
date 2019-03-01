@@ -29,10 +29,13 @@ public class GlobalPoiSearch {
     private Context context;
     private PoiSearchListener listener;
     private Handler mainHandler;
+    private boolean isFoursquareEnable = false;
 
     public GlobalPoiSearch(Context context) {
         this.context = context;
         mainHandler = new Handler(context.getMainLooper());
+        AMapUtil.init(context);
+        isFoursquareEnable = FoursquareUtil.init(context);
     }
 
     public void setOnPoiSearchListener(PoiSearchListener listener) {
@@ -82,8 +85,8 @@ public class GlobalPoiSearch {
             }
             return;
         }
-        //判断经纬度是否在中国范围内
-        if (LbsTool.isInChina(lat, lng)) {
+        //判断经纬度是否在中国范围内或者Foursquare不可用
+        if (LbsTool.isInChina(lat, lng) || !isFoursquareEnable) {
             //如果点在国内，获取高德
             getAMapPoi(lat, lng, radius);
         } else {
