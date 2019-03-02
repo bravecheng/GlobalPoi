@@ -31,7 +31,7 @@ public class FoursquareUtil {
         }
     }
 
-    public static String getLatLngUrl(Context context, double lat, double lng, int radius){
+    public static String getLatLngUrl(double lat, double lng, int radius){
         StringBuilder sb = new StringBuilder(BASE_URL);
         sb.append("&radius=");
         sb.append(radius);

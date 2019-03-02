@@ -10,6 +10,7 @@ import java.util.List;
 import mobi.chy.map.globalpoi.entity.GlobalPoi;
 import mobi.chy.map.globalpoi.util.AMapUtil;
 import mobi.chy.map.globalpoi.util.FoursquareUtil;
+import mobi.chy.map.globalpoi.util.GoogleMapUtil;
 import mobi.chy.map.globalpoi.util.LbsTool;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,12 +32,14 @@ public class GlobalPoiSearch {
     private Handler mainHandler;
     private boolean isAmapEnable = false;
     private boolean isFsqeEnable = false;
+    private boolean isGMapEnable = false;
 
     public GlobalPoiSearch(Context context) {
         this.context = context;
         mainHandler = new Handler(context.getMainLooper());
         isAmapEnable = AMapUtil.init(context);
         isFsqeEnable = FoursquareUtil.init(context);
+        isGMapEnable = GoogleMapUtil.init(context);
     }
 
     public void setOnPoiSearchListener(PoiSearchListener listener) {
@@ -99,13 +102,15 @@ public class GlobalPoiSearch {
             }
             return;
         }
-        //判断经纬度是否在中国范围内或者Foursquare不可用
-        if (LbsTool.isInChina(lat, lng) || !isFsqeEnable) {
-            //如果点在国内，获取高德
-            getAMapPoi(lat, lng, radius);
-        } else {
+        if (!LbsTool.isInChina(lat, lng) && isFsqeEnable) {
             //如果点在国外，获取Foursquare
             getFoursquareVenues(lat, lng, radius);
+        } else if (!LbsTool.isInChina(lat, lng) && isGMapEnable) {
+            String url = GoogleMapUtil.getLatLngUrl(lat, lng, radius);
+            getGoogleMaps(url, lat, lng, radius);
+        } else {
+            //如果点在国内，获取高德
+            getAMapPoi(lat, lng, radius);
         }
     }
 
@@ -239,7 +244,7 @@ public class GlobalPoiSearch {
      */
     private void getFoursquareVenues(double lat, double lng, int radius) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        String url = FoursquareUtil.getLatLngUrl(context, lat, lng, radius);
+        String url = FoursquareUtil.getLatLngUrl(lat, lng, radius);
         Request request = new Request.Builder().url(url).method("GET", null).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
@@ -276,6 +281,71 @@ public class GlobalPoiSearch {
                     if (responseCode == 200 && jsonResult.has("response") && listener != null) {
                         JSONObject jsonResponse = jsonResult.getJSONObject("response");
                         final List<GlobalPoi> poiList = GlobalPoi.getBeanFromFoursquare(jsonResponse.optString("venues"));
+                        mainHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                listener.onPoiSearchSuccess(poiList);
+                                listener.onPoiSearchFinish();
+                            }
+                        });
+                    } else {
+                        if (listener != null) {
+                            final int finalResponseCode = responseCode;
+                            final String finalErrorType = errorType;
+                            mainHandler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    listener.onPoiSearchFailed(finalResponseCode, finalErrorType);
+                                    listener.onPoiSearchFinish();
+                                }
+                            });
+                        }
+                    }
+                } catch (JSONException e) {
+                }
+            }
+        });
+    }
+
+    /**
+     * 国外坐标使用Foursquare搜索
+     */
+    private void getGoogleMaps(String url, double lat, double lng, int radius) {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        Request request = new Request.Builder().url(url).method("GET", null).build();
+        Call call = okHttpClient.newCall(request);
+        call.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (listener != null) {
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiSearchFailed(-200, "network error!");
+                            listener.onPoiSearchFinish();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String result = response.body().string();
+                try {
+                    JSONObject jsonResult = new JSONObject(result);
+                    int responseCode = 0;
+                    String errorType = "OK";
+                    if (jsonResult.has("status")) {
+                        String status = jsonResult.optString("status");
+                        if ("OK".equals(status)) {
+                            responseCode = 200;
+                        } else {
+                            responseCode = 0;
+                        }
+                    }
+                    //状态码 = 200 表示可用
+                    if (responseCode == 200 && jsonResult.has("results") && listener != null) {
+                        final List<GlobalPoi> poiList = GlobalPoi.getBeanFromGoogleMaps(jsonResult.optString("results"));
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {

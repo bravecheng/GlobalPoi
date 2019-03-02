@@ -101,4 +101,25 @@ public class GlobalPoi {
         }
         return globalPois;
     }
+
+    public static List<GlobalPoi> getBeanFromGoogleMaps(String result){
+        ArrayList<GlobalPoi> globalPois = new ArrayList<>();
+        try {
+            JSONArray pois = new JSONArray(result);
+            for (int i = 0; i < pois.length(); i++) {
+                JSONObject poiJsonResult = pois.getJSONObject(i);
+                GlobalPoi globalPoi = new GlobalPoi();
+                globalPoi.setId(poiJsonResult.optString("place_id"));
+                globalPoi.setName(poiJsonResult.optString("name"));
+                Location location = new Location();
+                location.setAddress(poiJsonResult.optString("vicinity"));
+                location.setLat(poiJsonResult.optJSONObject("geometry").optJSONObject("location").optDouble("lat"));
+                location.setLng(poiJsonResult.optJSONObject("geometry").optJSONObject("location").optDouble("lng"));
+                globalPoi.setLocation(location);
+                globalPois.add(globalPoi);
+            }
+        } catch (JSONException e) {
+        }
+        return globalPois;
+    }
 }
