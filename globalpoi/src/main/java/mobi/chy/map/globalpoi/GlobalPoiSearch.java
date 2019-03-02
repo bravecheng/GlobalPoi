@@ -29,13 +29,14 @@ public class GlobalPoiSearch {
     private Context context;
     private PoiSearchListener listener;
     private Handler mainHandler;
-    private boolean isFoursquareEnable = false;
+    private boolean isAmapEnable = false;
+    private boolean isFsqeEnable = false;
 
     public GlobalPoiSearch(Context context) {
         this.context = context;
         mainHandler = new Handler(context.getMainLooper());
-        AMapUtil.init(context);
-        isFoursquareEnable = FoursquareUtil.init(context);
+        isAmapEnable = AMapUtil.init(context);
+        isFsqeEnable = FoursquareUtil.init(context);
     }
 
     public void setOnPoiSearchListener(PoiSearchListener listener) {
@@ -85,8 +86,21 @@ public class GlobalPoiSearch {
             }
             return;
         }
+        //如果高德地图key未设置
+        if (!isAmapEnable) {
+            if (listener != null) {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        listener.onPoiSearchFailed(-400, "amap key is null!");
+                        listener.onPoiSearchFinish();
+                    }
+                });
+            }
+            return;
+        }
         //判断经纬度是否在中国范围内或者Foursquare不可用
-        if (LbsTool.isInChina(lat, lng) || !isFoursquareEnable) {
+        if (LbsTool.isInChina(lat, lng) || !isFsqeEnable) {
             //如果点在国内，获取高德
             getAMapPoi(lat, lng, radius);
         } else {
