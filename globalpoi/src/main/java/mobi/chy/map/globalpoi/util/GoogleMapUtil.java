@@ -3,9 +3,19 @@ package mobi.chy.map.globalpoi.util;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import mobi.chy.map.globalpoi.entity.GlobalPoi;
+import mobi.chy.map.globalpoi.entity.Location;
 
 /**
  * Google Maps工具类
@@ -32,7 +42,7 @@ public class GoogleMapUtil {
         }
     }
 
-    public static String getKeywordsUrl(Context context, String keywords, String city, int page){
+    public static String getKeywordsUrl(String keywords, String city){
         TreeMap<String, String> tm = new TreeMap<>();
         tm.put("keywords", keywords);
         tm.put("key", "" + GMAP_KEY);
@@ -73,5 +83,26 @@ public class GoogleMapUtil {
         }
         String str = sb.toString();
         return str.substring(0,str.length()-1);
+    }
+
+    public static List<GlobalPoi> getBeanFromGoogleMaps(String result){
+        ArrayList<GlobalPoi> globalPois = new ArrayList<>();
+        try {
+            JSONArray pois = new JSONArray(result);
+            for (int i = 0; i < pois.length(); i++) {
+                JSONObject poiJsonResult = pois.getJSONObject(i);
+                GlobalPoi globalPoi = new GlobalPoi();
+                globalPoi.setId(poiJsonResult.optString("place_id"));
+                globalPoi.setName(poiJsonResult.optString("name"));
+                Location location = new Location();
+                location.setAddress(poiJsonResult.optString("vicinity"));
+                location.setLat(poiJsonResult.optJSONObject("geometry").optJSONObject("location").optDouble("lat"));
+                location.setLng(poiJsonResult.optJSONObject("geometry").optJSONObject("location").optDouble("lng"));
+                globalPoi.setLocation(location);
+                globalPois.add(globalPoi);
+            }
+        } catch (JSONException e) {
+        }
+        return globalPois;
     }
 }

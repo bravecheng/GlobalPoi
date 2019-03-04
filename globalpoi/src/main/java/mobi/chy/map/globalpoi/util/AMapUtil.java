@@ -1,17 +1,22 @@
 package mobi.chy.map.globalpoi.util;
 
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.text.TextUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Locale;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
+
+import mobi.chy.map.globalpoi.entity.GlobalPoi;
+import mobi.chy.map.globalpoi.entity.Location;
 
 /**
  * 高德工具类
@@ -29,7 +34,7 @@ public class AMapUtil {
     private static final String PKG_NAME = "com.iwear.mytracks";
     private static final String AMAP_KEY = "08ef30b749bff6abee13b141ef020b0d";
 
-    public static String getKeywordsUrl(Context context, String keywords, String city, int page){
+    public static String getKeywordsUrl(String keywords, String city, int page){
         TreeMap<String, String> tm = new TreeMap<>();
         tm.put("output", "json");
         tm.put("sortrule", "distance");
@@ -55,7 +60,7 @@ public class AMapUtil {
         return TEXT_URL + treeMapStr(tm);
     }
 
-    public static String getLatLngUrl(Context context, double lat, double lng, int radius) {
+    public static String getLatLngUrl(double lat, double lng, int radius) {
         TreeMap<String, String> tm = new TreeMap<>();
         tm.put("output", "json");
         //主要显示大型地点，例如商场、公司、银行、加油站、大型餐厅、政府机关、医院等等
@@ -137,6 +142,38 @@ public class AMapUtil {
         } catch (NoSuchAlgorithmException e) {
             return "";
         }
+    }
+
+    public static List<GlobalPoi> getBeanFromAmap(String result) {
+        ArrayList<GlobalPoi> globalPois = new ArrayList<>();
+        try {
+            JSONArray pois = new JSONArray(result);
+            for (int i = 0; i < pois.length(); i++) {
+                JSONObject poiJsonResult = pois.getJSONObject(i);
+                GlobalPoi globalPoi = new GlobalPoi();
+                globalPoi.setId(poiJsonResult.optString("id"));
+                globalPoi.setName(poiJsonResult.optString("name"));
+                Location location = new Location();
+                location.setAddress(poiJsonResult.optString("address"));
+                location.setCitycode(poiJsonResult.optString("citycode"));
+                location.setCity(poiJsonResult.optString("cityname"));
+                location.setState(poiJsonResult.optString("pname"));
+                location.setCountry("中国");
+                location.setPostalCode(poiJsonResult.optString("adcode"));
+                try {
+                    String[] latLng = poiJsonResult.optString("location").split(",");
+                    location.setLat(Double.valueOf(latLng[1]));
+                    location.setLng(Double.valueOf(latLng[0]));
+                } catch (Exception e) {
+                    location.setLat(0F);
+                    location.setLng(0F);
+                }
+                globalPoi.setLocation(location);
+                globalPois.add(globalPoi);
+            }
+        } catch (JSONException e) {
+        }
+        return globalPois;
     }
 
 }

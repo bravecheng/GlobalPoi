@@ -71,13 +71,48 @@
             android:layout_width="wrap_content"
             android:layout_height="36dp"
             android:layout_marginLeft="20dp"
-            android:text="关键字搜索" />
+            android:text="高德搜索" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/third"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:gravity="center"
+        android:layout_below="@+id/secound"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/et_keyword_2"
+            android:layout_width="140dp"
+            android:layout_height="40dp"
+            android:inputType="text"
+            android:text="合肥市政府"
+            android:lines="1"
+            android:hint="请输入搜索关键字"/>
+
+        <EditText
+            android:id="@+id/et_city_2"
+            android:layout_width="60dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="20dp"
+            android:inputType="text"
+            android:text="合肥市"
+            android:lines="1"
+            android:hint="请输入国家,城市名称"/>
+
+        <Button
+            android:id="@+id/btn_keyword_2"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginLeft="20dp"
+            android:text="Foursquare\n搜索" />
     </LinearLayout>
 
     <ListView
         android:id="@+id/lv_poi"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/secound" />
+        android:layout_below="@+id/third" />
 
 </RelativeLayout>

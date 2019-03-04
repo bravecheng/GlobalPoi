@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
     private EditText etKeyword;
     private EditText etCity;
     private Button btnKeyword;
+    private EditText etKeyword2;
+    private EditText etCity2;
+    private Button btnKeyword2;
     private ListView lvPoi;
     GlobalPoiSearch globalPoiSearch;
     PoiListAdapter mAdapter;
@@ -35,10 +38,15 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
         setContentView(R.layout.activity_main);
         etLat = findViewById(R.id.lat);
         etLng = findViewById(R.id.lng);
+        btnSearch = findViewById(R.id.btn_search);
+
         etKeyword = findViewById(R.id.et_keyword);
         etCity = findViewById(R.id.et_city);
         btnKeyword = findViewById(R.id.btn_keyword);
-        btnSearch = findViewById(R.id.btn_search);
+
+        etKeyword2 = findViewById(R.id.et_keyword_2);
+        etCity2 = findViewById(R.id.et_city_2);
+        btnKeyword2 = findViewById(R.id.btn_keyword_2);
         lvPoi = findViewById(R.id.lv_poi);
 
         mAdapter = new PoiListAdapter();
@@ -54,7 +62,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
                 try {
                     double lat = Double.parseDouble(etLat.getText().toString());
                     double lng = Double.parseDouble(etLng.getText().toString());
-                    globalPoiSearch.searchLatLngAsyn(lat, lng);
+                    globalPoiSearch.queryLatLng(lat, lng);
                 } catch (NumberFormatException e) {
                     Toast.makeText(MainActivity.this, "输入不合法", Toast.LENGTH_LONG).show();
                 }
@@ -64,7 +72,14 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
         btnKeyword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                globalPoiSearch.searchKeywordsAsyn(etKeyword.getText().toString(),etCity.getText().toString(),1);
+                globalPoiSearch.queryAMap(etKeyword.getText().toString(),etCity.getText().toString(), 1);
+            }
+        });
+
+        btnKeyword2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                globalPoiSearch.queryFoursquare(etKeyword2.getText().toString(),etCity2.getText().toString());
             }
         });
     }
