@@ -25,18 +25,9 @@ public class AMapUtil {
 
     private static final String AROUND_URL = "http://restapi.amap.com/v3/place/around?";
     private static final String TEXT_URL = "http://restapi.amap.com/v3/place/text?";
-    private static String SHA1_VALUE, PKG_NAME, AMAP_KEY;
-
-    public static boolean init(Context context){
-        try {
-            ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(getPkgName(context), PackageManager.GET_META_DATA);
-            AMAP_KEY = appInfo.metaData.getString("com.amap.api.v2.apikey");
-            return true;
-        } catch (PackageManager.NameNotFoundException e) {
-            AMAP_KEY = "ERROR_KEY";
-            return false;
-        }
-    }
+    private static final String SHA1_VALUE = "92:88:41:C9:3F:02:61:10:14:C5:AB:3B:2F:7C:F9:8B:49:9B:70:FB";
+    private static final String PKG_NAME = "com.iwear.mytracks";
+    private static final String AMAP_KEY = "08ef30b749bff6abee13b141ef020b0d";
 
     public static String getKeywordsUrl(Context context, String keywords, String city, int page){
         TreeMap<String, String> tm = new TreeMap<>();
@@ -58,7 +49,7 @@ public class AMapUtil {
         Random random = new Random();
         ts = ts.substring(0, ts.length() - 2) + random.nextInt(2) + random.nextInt(10);
         //计算scode
-        String scode = getMD5(getSha1(context) + ":" + getPkgName(context) + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
+        String scode = getMD5(SHA1_VALUE + ":" + PKG_NAME + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
         tm.put("ts", ts);
         tm.put("scode", scode);
         return TEXT_URL + treeMapStr(tm);
@@ -84,7 +75,7 @@ public class AMapUtil {
         Random random = new Random();
         ts = ts.substring(0, ts.length() - 2) + random.nextInt(2) + random.nextInt(10);
         //计算scode
-        String scode = getMD5(getSha1(context) + ":" + getPkgName(context) + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
+        String scode = getMD5(SHA1_VALUE + ":" + PKG_NAME + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
         tm.put("ts", ts);
         tm.put("scode", scode);
         return AROUND_URL + treeMapStr(tm);
@@ -146,39 +137,6 @@ public class AMapUtil {
         } catch (NoSuchAlgorithmException e) {
             return "";
         }
-    }
-
-    public static String getPkgName(Context context) {
-        if (TextUtils.isEmpty(PKG_NAME)) {
-            PKG_NAME = context.getPackageName();
-        }
-        return PKG_NAME;
-    }
-
-    public static String getSha1(Context context) {
-        if (TextUtils.isEmpty(SHA1_VALUE)) {
-            try {
-                PackageInfo info = context.getPackageManager().getPackageInfo(getPkgName(context), PackageManager.GET_SIGNATURES);
-                byte[] cert = info.signatures[0].toByteArray();
-                MessageDigest md = MessageDigest.getInstance("SHA1");
-                byte[] publicKey = md.digest(cert);
-                StringBuffer hexString = new StringBuffer();
-                for (int i = 0; i < publicKey.length; i++) {
-                    String appendString = Integer.toHexString(0xFF & publicKey[i]).toUpperCase(Locale.US);
-                    if (appendString.length() == 1) {
-                        hexString.append("0");
-                    }
-                    hexString.append(appendString);
-                    hexString.append(":");
-                }
-                SHA1_VALUE = hexString.substring(0, hexString.length()-1);
-            } catch (PackageManager.NameNotFoundException e) {
-                SHA1_VALUE = "";
-            } catch (NoSuchAlgorithmException e) {
-                SHA1_VALUE = "";
-            }
-        }
-        return SHA1_VALUE;
     }
 
 }

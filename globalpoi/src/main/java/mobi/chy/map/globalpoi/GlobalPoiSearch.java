@@ -30,14 +30,12 @@ public class GlobalPoiSearch {
     private Context context;
     private PoiSearchListener listener;
     private Handler mainHandler;
-    private boolean isAmapEnable = false;
     private boolean isFsqeEnable = false;
     private boolean isGMapEnable = false;
 
     public GlobalPoiSearch(Context context) {
         this.context = context;
         mainHandler = new Handler(context.getMainLooper());
-        isAmapEnable = AMapUtil.init(context);
         isFsqeEnable = FoursquareUtil.init(context);
         isGMapEnable = GoogleMapUtil.init(context);
     }
@@ -83,19 +81,6 @@ public class GlobalPoiSearch {
                     @Override
                     public void run() {
                         listener.onPoiSearchFailed(-300, "lat or lng error!");
-                        listener.onPoiSearchFinish();
-                    }
-                });
-            }
-            return;
-        }
-        //如果高德地图key未设置
-        if (!isAmapEnable) {
-            if (listener != null) {
-                mainHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onPoiSearchFailed(-400, "amap key is null!");
                         listener.onPoiSearchFinish();
                     }
                 });
