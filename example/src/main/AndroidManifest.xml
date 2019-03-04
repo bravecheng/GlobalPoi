@@ -19,10 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- AMap Key-->
-        <meta-data
-            android:name="com.amap.api.v2.apikey"
-            android:value="66774760b0a9ce1fd8cc052f0619bc0c" />
         <!-- Google Maps Key-->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
