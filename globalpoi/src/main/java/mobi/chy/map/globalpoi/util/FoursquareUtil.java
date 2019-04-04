@@ -24,18 +24,15 @@ public class FoursquareUtil {
     private FoursquareUtil(){}
 
     private static final String BASE_URL = "https://api.foursquare.com/v2/venues/search?v=20161016";
-    private static String CLIENT_ID, CLIENT_SECRET;
+    private static String CLIENT_ID = "TESBVHX5NCPPLUO51RZ15IVXZITDSFTXXEWHQ2UGTEP5VGB3";
+    private static String CLIENT_SECRET = "VK1PN0LUSLXTQSHSPEYX4222P0SBEXWQIGOETBHQTBXWEOHQ";
 
-    public static boolean init(Context context){
+    public static void init(Context context){
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
             CLIENT_ID = appInfo.metaData.getString("FOURSQUARE_CLIENT_ID");
             CLIENT_SECRET = appInfo.metaData.getString("FOURSQUARE_CLIENT_SECRET");
-            return true;
         } catch (Exception e) {
-            CLIENT_ID = "TESBVHX5NCPPLUO51RZ15IVXZITDSFTXXEWHQ2UGTEP5VGB3";
-            CLIENT_SECRET = "VK1PN0LUSLXTQSHSPEYX4222P0SBEXWQIGOETBHQTBXWEOHQ";
-            return false;
         }
     }
 
