@@ -5,7 +5,7 @@ Android版基于高德地图和Foursquare的全球Poi搜索工具，整合后实
 
 ## How to used
 
-### 1. You need to register AMap key & Foursquare App.  
+### 1. You need to register ~~AMap key &~~ Foursquare App.
 
 ~~go to [AMap Console](http://lbs.amap.com/dev/)~~ Already Built in.
 go to [Foursquare Developers](https://foursquare.com/developers/apps).  
