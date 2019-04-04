@@ -1,6 +1,8 @@
 # GlobalPoi
 [ ![Download](https://api.bintray.com/packages/bravecheng/maven/GlobalPoiSearch/images/download.svg) ](https://bintray.com/bravecheng/maven/GlobalPoiSearch/_latestVersion)
 
+Android版基于高德地图和Foursquare的全球Poi搜索工具，整合后实现类似于微信的搜索效果，国内显示从高德搜索到的数据，在国外显示从Foursquare搜索到的结果，使得结果尽可能的准确。
+
 ## How to used
 
 ### 1. You need to register AMap key & Foursquare App.  
@@ -10,7 +12,7 @@ go to [Foursquare Developers](https://foursquare.com/developers/apps).
 
 ### 2. Add gradle dependency.
 ```xml
-compile 'mobi.chy:GlobalPoiSearch:0.2.2'
+compile 'mobi.chy:GlobalPoiSearch:0.5.0'
 ```
 
 ### 3. Add the corresponding key in the manifest file.
