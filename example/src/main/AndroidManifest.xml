@@ -19,17 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Google Maps Key-->
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyB1-tVMwVbCGX_DLh6lB1JfRWyzz7rXrPA" />
-        <!-- Foursquare Key-->
-        <meta-data
-            android:name="FOURSQUARE_CLIENT_ID"
-            android:value="TESBVHX5NCPPLUO51RZ15IVXZITDSFTXXEWHQ2UGTEP5VGB3" />
-        <meta-data
-            android:name="FOURSQUARE_CLIENT_SECRET"
-            android:value="VK1PN0LUSLXTQSHSPEYX4222P0SBEXWQIGOETBHQTBXWEOHQ" />
     </application>
 
 </manifest>

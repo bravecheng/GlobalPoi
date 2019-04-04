@@ -32,15 +32,16 @@ public class FoursquareUtil {
             CLIENT_ID = appInfo.metaData.getString("FOURSQUARE_CLIENT_ID");
             CLIENT_SECRET = appInfo.metaData.getString("FOURSQUARE_CLIENT_SECRET");
             return true;
-        } catch (PackageManager.NameNotFoundException e) {
-            CLIENT_ID = "ERROR_KEY";
-            CLIENT_SECRET = "ERROR_KEY";
+        } catch (Exception e) {
+            CLIENT_ID = "TESBVHX5NCPPLUO51RZ15IVXZITDSFTXXEWHQ2UGTEP5VGB3";
+            CLIENT_SECRET = "VK1PN0LUSLXTQSHSPEYX4222P0SBEXWQIGOETBHQTBXWEOHQ";
             return false;
         }
     }
 
     public static String getKeywordsUrl(String keywords, String city){
         StringBuilder sb = new StringBuilder(BASE_URL);
+        sb.append("&limit=50");
         sb.append("&query=");
         sb.append(keywords);
         sb.append("&client_id=");
@@ -54,6 +55,7 @@ public class FoursquareUtil {
 
     public static String getLatLngUrl(double lat, double lng, int radius){
         StringBuilder sb = new StringBuilder(BASE_URL);
+        sb.append("&limit=50");
         sb.append("&radius=");
         sb.append(radius);
         sb.append("&client_id=");

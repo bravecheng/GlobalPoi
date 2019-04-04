@@ -2,7 +2,6 @@ package mobi.chy.map.globalpoi;
 
 import android.content.Context;
 import android.os.Handler;
-import android.text.TextUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.IOException;
@@ -10,7 +9,6 @@ import java.util.List;
 import mobi.chy.map.globalpoi.entity.GlobalPoi;
 import mobi.chy.map.globalpoi.util.AMapUtil;
 import mobi.chy.map.globalpoi.util.FoursquareUtil;
-import mobi.chy.map.globalpoi.util.GoogleMapUtil;
 import mobi.chy.map.globalpoi.util.LbsTool;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -30,14 +28,11 @@ public class GlobalPoiSearch {
     private Context context;
     private PoiSearchListener listener;
     private Handler mainHandler;
-    private boolean isFsqeEnable = false;
-    private boolean isGMapEnable = false;
 
     public GlobalPoiSearch(Context context) {
         this.context = context;
         mainHandler = new Handler(context.getMainLooper());
-        isFsqeEnable = FoursquareUtil.init(context);
-        isGMapEnable = GoogleMapUtil.init(context);
+        FoursquareUtil.init(context);
     }
 
     public void setOnPoiSearchListener(PoiSearchListener listener) {
@@ -45,19 +40,25 @@ public class GlobalPoiSearch {
     }
 
     public interface PoiSearchListener {
-        void onPoiSearchSuccess(List<GlobalPoi> poiList);
+        void onPoiSearchSuccess(int totalCount, List<GlobalPoi> poiList);
 
         void onPoiSearchFailed(int errCode, String errDesc);
 
         void onPoiSearchFinish();
     }
 
-    public void queryLatLng(double lat, double lng, int radius) {
+    public void setRadius(int radius) {
         this.radius = radius;
-        queryLatLng(lat, lng);
     }
 
-    public void queryLatLng(double lat, double lng) {
+    /**
+     *  根据经纬度搜索周边Poi，pageIndex从0开始
+     *
+     * @param lat
+     * @param lng
+     * @param pageIndex
+     */
+    public void queryLatLng(double lat, double lng, int pageIndex) {
         //验证经纬度合法性
         if (!LbsTool.isVerifyPass(lat, lng)) {
             if (listener != null) {
@@ -71,15 +72,12 @@ public class GlobalPoiSearch {
             }
             return;
         }
-        if (!LbsTool.isInChina(lat, lng) && isFsqeEnable) {
+        if (!LbsTool.isInChina(lat, lng)) {
             //如果点在国外，获取Foursquare
-            getFoursquareVenues(lat, lng, radius);
-        } else if (!LbsTool.isInChina(lat, lng) && isGMapEnable) {
-            String url = GoogleMapUtil.getLatLngUrl(lat, lng, radius);
-            getGoogleMaps(url, lat, lng, radius);
+            getFoursquareVenues(lat, lng);
         } else {
             //如果点在国内，获取高德
-            getAMapPoi(lat, lng, radius);
+            getAMapPoi(lat, lng, pageIndex);
         }
     }
 
@@ -117,11 +115,12 @@ public class GlobalPoiSearch {
                     }
                     //状态码 = 200 表示可用
                     if (responseCode == 10000 && jsonResult.has("pois") && listener != null) {
+                        final int totalCount = jsonResult.optInt("count") / 20;
                         final List<GlobalPoi> poiList = AMapUtil.getBeanFromAmap(jsonResult.optString("pois"));
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onPoiSearchSuccess(poiList);
+                                listener.onPoiSearchSuccess(totalCount, poiList);
                                 listener.onPoiSearchFinish();
                             }
                         });
@@ -189,69 +188,7 @@ public class GlobalPoiSearch {
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onPoiSearchSuccess(poiList);
-                                listener.onPoiSearchFinish();
-                            }
-                        });
-                    } else {
-                        if (listener != null) {
-                            final int finalResponseCode = responseCode;
-                            final String finalErrorType = errorType;
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onPoiSearchFailed(finalResponseCode, finalErrorType);
-                                    listener.onPoiSearchFinish();
-                                }
-                            });
-                        }
-                    }
-                } catch (JSONException e) {
-                }
-            }
-        });
-    }
-
-    public void queryGoogleMaps(String keywords, String city) {
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder().url(GoogleMapUtil.getKeywordsUrl(keywords,city)).method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if (listener != null) {
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onPoiSearchFailed(-200, "network error!");
-                            listener.onPoiSearchFinish();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
-                try {
-                    JSONObject jsonResult = new JSONObject(result);
-                    int responseCode = 0;
-                    String errorType = "OK";
-                    if (jsonResult.has("status")) {
-                        String status = jsonResult.optString("status");
-                        if ("OK".equals(status)) {
-                            responseCode = 200;
-                        } else {
-                            responseCode = 0;
-                        }
-                    }
-                    //状态码 = 200 表示可用
-                    if (responseCode == 200 && jsonResult.has("results") && listener != null) {
-                        final List<GlobalPoi> poiList = GoogleMapUtil.getBeanFromGoogleMaps(jsonResult.optString("results"));
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onPoiSearchSuccess(poiList);
+                                listener.onPoiSearchSuccess(poiList.size(), poiList);
                                 listener.onPoiSearchFinish();
                             }
                         });
@@ -277,9 +214,9 @@ public class GlobalPoiSearch {
     /**
      * 国内坐标使用AMap搜索
      */
-    private void getAMapPoi(double lat, double lng, int radius) {
+    private void getAMapPoi(double lat, double lng, int pageIndex) {
         OkHttpClient okHttpClient = new OkHttpClient();
-        String url = AMapUtil.getLatLngUrl(lat, lng, radius);
+        String url = AMapUtil.getLatLngUrl(lat, lng, radius, pageIndex);
         Request request = new Request.Builder().url(url).method("GET", null).build();
         Call call = okHttpClient.newCall(request);
         call.enqueue(new Callback() {
@@ -311,11 +248,12 @@ public class GlobalPoiSearch {
                     }
                     //状态码 = 200 表示可用
                     if (responseCode == 10000 && jsonResult.has("pois") && listener != null) {
+                        final int totalCount = jsonResult.optInt("count") / 20;
                         final List<GlobalPoi> poiList = AMapUtil.getBeanFromAmap(jsonResult.optString("pois"));
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onPoiSearchSuccess(poiList);
+                                listener.onPoiSearchSuccess(totalCount, poiList);
                                 listener.onPoiSearchFinish();
                             }
                         });
@@ -341,7 +279,7 @@ public class GlobalPoiSearch {
     /**
      * 国外坐标使用Foursquare搜索
      */
-    private void getFoursquareVenues(double lat, double lng, int radius) {
+    private void getFoursquareVenues(double lat, double lng) {
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = FoursquareUtil.getLatLngUrl(lat, lng, radius);
         Request request = new Request.Builder().url(url).method("GET", null).build();
@@ -383,72 +321,7 @@ public class GlobalPoiSearch {
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onPoiSearchSuccess(poiList);
-                                listener.onPoiSearchFinish();
-                            }
-                        });
-                    } else {
-                        if (listener != null) {
-                            final int finalResponseCode = responseCode;
-                            final String finalErrorType = errorType;
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onPoiSearchFailed(finalResponseCode, finalErrorType);
-                                    listener.onPoiSearchFinish();
-                                }
-                            });
-                        }
-                    }
-                } catch (JSONException e) {
-                }
-            }
-        });
-    }
-
-    /**
-     * 国外坐标使用GoogleMaps搜索
-     */
-    private void getGoogleMaps(String url, double lat, double lng, int radius) {
-        OkHttpClient okHttpClient = new OkHttpClient();
-        Request request = new Request.Builder().url(url).method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                if (listener != null) {
-                    mainHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            listener.onPoiSearchFailed(-200, "network error!");
-                            listener.onPoiSearchFinish();
-                        }
-                    });
-                }
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
-                try {
-                    JSONObject jsonResult = new JSONObject(result);
-                    int responseCode = 0;
-                    String errorType = "OK";
-                    if (jsonResult.has("status")) {
-                        String status = jsonResult.optString("status");
-                        if ("OK".equals(status)) {
-                            responseCode = 200;
-                        } else {
-                            responseCode = 0;
-                        }
-                    }
-                    //状态码 = 200 表示可用
-                    if (responseCode == 200 && jsonResult.has("results") && listener != null) {
-                        final List<GlobalPoi> poiList = GoogleMapUtil.getBeanFromGoogleMaps(jsonResult.optString("results"));
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onPoiSearchSuccess(poiList);
+                                listener.onPoiSearchSuccess(poiList.size(), poiList);
                                 listener.onPoiSearchFinish();
                             }
                         });

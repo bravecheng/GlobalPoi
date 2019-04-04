@@ -60,7 +60,7 @@ public class AMapUtil {
         return TEXT_URL + treeMapStr(tm);
     }
 
-    public static String getLatLngUrl(double lat, double lng, int radius) {
+    public static String getLatLngUrl(double lat, double lng, int radius, int pageIndex) {
         TreeMap<String, String> tm = new TreeMap<>();
         tm.put("output", "json");
         //主要显示大型地点，例如商场、公司、银行、加油站、大型餐厅、政府机关、医院等等
@@ -71,7 +71,7 @@ public class AMapUtil {
         tm.put("citylimit", "false");
         tm.put("children", "0");
         tm.put("language", "zh-CN");
-        tm.put("page", "1");
+        tm.put("page", "" + (pageIndex +1));
         tm.put("radius", "" + radius);
         tm.put("location", lat + "," + lng);
         tm.put("key", "" + AMAP_KEY);

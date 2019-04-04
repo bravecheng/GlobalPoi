@@ -24,10 +24,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
     private Button btnSearch;
     private EditText etKeyword;
     private EditText etCity;
-    private Button btnKeyword;
-    private EditText etKeyword2;
-    private EditText etCity2;
-    private Button btnKeyword2;
+    private Button btnInside, btnOutside;
     private ListView lvPoi;
     GlobalPoiSearch globalPoiSearch;
     PoiListAdapter mAdapter;
@@ -42,11 +39,9 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
 
         etKeyword = findViewById(R.id.et_keyword);
         etCity = findViewById(R.id.et_city);
-        btnKeyword = findViewById(R.id.btn_keyword);
+        btnInside = findViewById(R.id.btn_inside);
+        btnOutside = findViewById(R.id.btn_outside);
 
-        etKeyword2 = findViewById(R.id.et_keyword_2);
-        etCity2 = findViewById(R.id.et_city_2);
-        btnKeyword2 = findViewById(R.id.btn_keyword_2);
         lvPoi = findViewById(R.id.lv_poi);
 
         mAdapter = new PoiListAdapter();
@@ -62,30 +57,30 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
                 try {
                     double lat = Double.parseDouble(etLat.getText().toString());
                     double lng = Double.parseDouble(etLng.getText().toString());
-                    globalPoiSearch.queryLatLng(lat, lng);
+                    globalPoiSearch.queryLatLng(lat, lng, 0);
                 } catch (NumberFormatException e) {
                     Toast.makeText(MainActivity.this, "输入不合法", Toast.LENGTH_LONG).show();
                 }
             }
         });
 
-        btnKeyword.setOnClickListener(new View.OnClickListener() {
+        btnInside.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                globalPoiSearch.queryAMap(etKeyword.getText().toString(),etCity.getText().toString(), 1);
+                globalPoiSearch.queryAMap(etKeyword.getText().toString(),etCity.getText().toString(), 0);
             }
         });
 
-        btnKeyword2.setOnClickListener(new View.OnClickListener() {
+        btnOutside.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                globalPoiSearch.queryFoursquare(etKeyword2.getText().toString(),etCity2.getText().toString());
+                globalPoiSearch.queryFoursquare(etKeyword.getText().toString(), etCity.getText().toString());
             }
         });
     }
 
     @Override
-    public void onPoiSearchSuccess(List<GlobalPoi> poiList) {
+    public void onPoiSearchSuccess(int totalCount, List<GlobalPoi> poiList) {
         mAdapter.setItems(poiList);
         lvPoi.setSelection(0);
     }
