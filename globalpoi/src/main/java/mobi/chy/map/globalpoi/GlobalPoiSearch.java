@@ -188,7 +188,7 @@ public class GlobalPoiSearch {
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onPoiSearchSuccess(poiList.size(), poiList);
+                                listener.onPoiSearchSuccess(1, poiList);
                                 listener.onPoiSearchFinish();
                             }
                         });
@@ -321,7 +321,7 @@ public class GlobalPoiSearch {
                         mainHandler.post(new Runnable() {
                             @Override
                             public void run() {
-                                listener.onPoiSearchSuccess(poiList.size(), poiList);
+                                listener.onPoiSearchSuccess(1, poiList);
                                 listener.onPoiSearchFinish();
                             }
                         });
