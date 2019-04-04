@@ -25,12 +25,10 @@ import okhttp3.Response;
 public class GlobalPoiSearch {
 
     private int radius = 5000;
-    private Context context;
     private PoiSearchListener listener;
     private Handler mainHandler;
 
     public GlobalPoiSearch(Context context) {
-        this.context = context;
         mainHandler = new Handler(context.getMainLooper());
         FoursquareUtil.init(context);
     }

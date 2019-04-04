@@ -3,6 +3,8 @@ package mobi.chy.map.globalpoi.util;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,8 +32,11 @@ public class FoursquareUtil {
     public static void init(Context context){
         try {
             ApplicationInfo appInfo = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-            CLIENT_ID = appInfo.metaData.getString("FOURSQUARE_CLIENT_ID");
-            CLIENT_SECRET = appInfo.metaData.getString("FOURSQUARE_CLIENT_SECRET");
+            if (!TextUtils.isEmpty(appInfo.metaData.getString("FOURSQUARE_CLIENT_ID"))
+                && !TextUtils.isEmpty(appInfo.metaData.getString("FOURSQUARE_CLIENT_SECRET"))){
+                CLIENT_ID = appInfo.metaData.getString("FOURSQUARE_CLIENT_ID");
+                CLIENT_SECRET = appInfo.metaData.getString("FOURSQUARE_CLIENT_SECRET");
+            }
         } catch (Exception e) {
         }
     }
