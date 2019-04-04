@@ -31,7 +31,7 @@ GlobalPoiSearch globalPoiSearch = new GlobalPoiSearch(this);
 globalPoiSearch.setOnPoiSearchListener(new GlobalPoiSearch.PoiSearchListener{
 
 	@Override
-    public void onPoiSearchSuccess(List<GlobalPoi> poiList) {
+    public void onPoiSearchSuccess(int totalCount, List<GlobalPoi> poiList) {
         //search success, do your work...
     }
 
@@ -48,8 +48,9 @@ globalPoiSearch.setOnPoiSearchListener(new GlobalPoiSearch.PoiSearchListener{
 });
 
 //search a latitude and longitude point.
-globalPoiSearch.searchLatLngAsyn(lat, lng);
+globalPoiSearch.queryLatLng(lat, lng, 0);
 
 //search a nearby place by keywords.
-globalPoiSearch.searchKeywordsAsyn(placeKeywords,city,pageIndex);
+globalPoiSearch.queryAMap(etKeyword.getText().toString(),etCity.getText().toString(), 0);
+globalPoiSearch.queryFoursquare(etKeyword.getText().toString(), etCity.getText().toString());
 ```
