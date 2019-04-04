@@ -7,7 +7,7 @@ Android版基于高德地图和Foursquare的全球Poi搜索工具，整合后实
 
 ### 1. You need to register AMap key & Foursquare App.  
 
-go to [AMap Console](http://lbs.amap.com/dev/).  
+~~go to [AMap Console](http://lbs.amap.com/dev/)~~ Already Built in.
 go to [Foursquare Developers](https://foursquare.com/developers/apps).  
 
 ### 2. Add gradle dependency.
@@ -17,9 +17,6 @@ compile 'mobi.chy:GlobalPoiSearch:0.5.0'
 
 ### 3. Add the corresponding key in the manifest file.
 ```xml
-<meta-data
-    android:name="com.amap.api.v2.apikey"
-    android:value="your amap key" />
 <meta-data
     android:name="FOURSQUARE_CLIENT_ID"
     android:value="your CLIENT_ID" />
