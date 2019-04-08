@@ -1,5 +1,6 @@
 package mobi.chy.map.globalpoi.entity;
 
+
 /**
  * 国内 GCJ02坐标，国外 WGS84坐标
  * <p>
@@ -10,11 +11,37 @@ public class Location {
 
     private double lat;
     private double lng;
+    /**
+     * 简单地址描述
+     */
     private String address;
-    private String postalCode;
+    /**
+     * 格式化地址输出
+     */
+    private String formattedAddress = "";
+    /**
+     * 邮政编码，国内基本为空
+     */
+    private String postalCode = "";
+    /**
+     * 城市代码，国外基本为空
+     */
     private String citycode = "";
+    /**
+     * 区，县一级名称，国外基本为空
+     */
+    private String district = "";
+    /**
+     * 城市，地级市
+     */
     private String city;
+    /**
+     * 州，省
+     */
     private String state;
+    /**
+     * 国家
+     */
     private String country;
 
     public double getLat() {
@@ -41,12 +68,28 @@ public class Location {
         this.address = address;
     }
 
+    public String getFormattedAddress() {
+        return formattedAddress;
+    }
+
+    public void setFormattedAddress(String formattedAddress) {
+        this.formattedAddress = formattedAddress;
+    }
+
     public String getPostalCode() {
         return postalCode;
     }
 
     public void setPostalCode(String postalCode) {
         this.postalCode = postalCode;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public void setDistrict(String district) {
+        this.district = district;
     }
 
     public String getCitycode() {

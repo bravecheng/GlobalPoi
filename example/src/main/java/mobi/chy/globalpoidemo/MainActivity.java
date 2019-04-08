@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
             holder.title.setText("[" + itemPoi.getLocation().getCountry() + "]-"
                     + "[" + itemPoi.getLocation().getState() + "]-"
                     + "[" + itemPoi.getLocation().getCity() + "]" + itemPoi.getName());
-            holder.address.setText(itemPoi.getLocation().getAddress());
+            holder.address.setText(itemPoi.getLocation().getFormattedAddress());
             return view;
         }
     }

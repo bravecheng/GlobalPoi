@@ -4,14 +4,11 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import mobi.chy.map.globalpoi.entity.GlobalPoi;
 import mobi.chy.map.globalpoi.entity.Location;
 
@@ -82,12 +79,23 @@ public class FoursquareUtil {
                 globalPoi.setName(poiJsonResult.optString("name"));
                 JSONObject locationJsonResult = poiJsonResult.getJSONObject("location");
                 Location location = new Location();
+                JSONArray faArray = locationJsonResult.optJSONArray("formattedAddress");
+                if (faArray != null && faArray.length() > 0) {
+                    StringBuilder formatAddr = new StringBuilder();
+                    for (int j = 0; j < faArray.length(); j++) {
+                        if (j != 0) {
+                            formatAddr.append(", ");
+                        }
+                        formatAddr.append(faArray.optString(j));
+                    }
+                    location.setFormattedAddress(formatAddr.toString());
+                }
                 location.setAddress(locationJsonResult.optString("address"));
                 location.setCitycode(locationJsonResult.optString("citycode"));
+                location.setPostalCode(locationJsonResult.optString("postalCode"));
                 location.setCity(locationJsonResult.optString("city"));
                 location.setState(locationJsonResult.optString("state"));
                 location.setCountry(locationJsonResult.optString("country"));
-                location.setPostalCode(locationJsonResult.optString("postalCode"));
                 location.setLat(locationJsonResult.optDouble("lat"));
                 location.setLng(locationJsonResult.optDouble("lng"));
                 globalPoi.setLocation(location);

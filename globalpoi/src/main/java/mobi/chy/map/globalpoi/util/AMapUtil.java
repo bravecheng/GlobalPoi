@@ -1,11 +1,9 @@
 package mobi.chy.map.globalpoi.util;
 
 import android.text.TextUtils;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -14,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
-
 import mobi.chy.map.globalpoi.entity.GlobalPoi;
 import mobi.chy.map.globalpoi.entity.Location;
 
@@ -155,11 +152,16 @@ public class AMapUtil {
                 globalPoi.setName(poiJsonResult.optString("name"));
                 Location location = new Location();
                 location.setAddress(poiJsonResult.optString("address"));
+                JSONArray postCode = poiJsonResult.optJSONArray("postcode");
+                if (postCode != null && postCode.length() > 0) {
+                    location.setPostalCode("" + postCode.optString(0));
+                }
                 location.setCitycode(poiJsonResult.optString("citycode"));
+                location.setDistrict(poiJsonResult.optString("adname"));
                 location.setCity(poiJsonResult.optString("cityname"));
                 location.setState(poiJsonResult.optString("pname"));
                 location.setCountry("中国");
-                location.setPostalCode(poiJsonResult.optString("adcode"));
+                location.setFormattedAddress(location.getState()+location.getCity()+location.getDistrict()+location.getAddress());
                 try {
                     String[] latLng = poiJsonResult.optString("location").split(",");
                     location.setLat(Double.valueOf(latLng[1]));
