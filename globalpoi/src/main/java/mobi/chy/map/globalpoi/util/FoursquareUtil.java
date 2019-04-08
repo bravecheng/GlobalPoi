@@ -91,7 +91,8 @@ public class FoursquareUtil {
                     location.setFormattedAddress(formatAddr.toString());
                 }
                 location.setAddress(locationJsonResult.optString("address"));
-                location.setCitycode(locationJsonResult.optString("citycode"));
+                location.setCountryCode(LbsTool.getCountryCode(locationJsonResult.optString("cc")));
+                location.setCityCode(locationJsonResult.optString("citycode"));
                 location.setPostalCode(locationJsonResult.optString("postalCode"));
                 location.setCity(locationJsonResult.optString("city"));
                 location.setState(locationJsonResult.optString("state"));

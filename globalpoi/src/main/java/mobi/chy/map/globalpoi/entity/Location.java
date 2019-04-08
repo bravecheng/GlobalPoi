@@ -26,7 +26,11 @@ public class Location {
     /**
      * 城市代码，国外基本为空
      */
-    private String citycode = "";
+    private String cityCode = "";
+    /**
+     * 国家代码
+     */
+    private String countryCode = "";
     /**
      * 区，县一级名称，国外基本为空
      */
@@ -92,12 +96,20 @@ public class Location {
         this.district = district;
     }
 
-    public String getCitycode() {
-        return citycode;
+    public String getCityCode() {
+        return cityCode;
     }
 
-    public void setCitycode(String citycode) {
-        this.citycode = citycode;
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
     }
 
     public String getCity() {
