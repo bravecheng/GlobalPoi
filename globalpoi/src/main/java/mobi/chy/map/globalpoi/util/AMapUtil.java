@@ -157,7 +157,7 @@ public class AMapUtil {
                     location.setPostalCode("" + postCode.optString(0));
                 }
                 location.setCityCode(poiJsonResult.optString("citycode"));
-                location.setCountryCode("86");
+                location.setCountryCode("0086");
                 location.setDistrict(poiJsonResult.optString("adname"));
                 location.setCity(poiJsonResult.optString("cityname"));
                 location.setState(poiJsonResult.optString("pname"));
