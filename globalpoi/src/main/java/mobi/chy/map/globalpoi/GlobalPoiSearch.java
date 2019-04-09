@@ -24,7 +24,7 @@ import okhttp3.Response;
 
 public class GlobalPoiSearch {
 
-    private int radius = 5000;
+    private int radius = 3000;
     private PoiSearchListener listener;
     private Handler mainHandler;
 

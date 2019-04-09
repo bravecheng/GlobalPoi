@@ -40,7 +40,7 @@ public class FoursquareUtil {
 
     public static String getKeywordsUrl(String keywords, String city){
         StringBuilder sb = new StringBuilder(BASE_URL);
-        sb.append("&limit=50");
+        sb.append("&limit=20");
         sb.append("&query=");
         sb.append(keywords);
         sb.append("&client_id=");
@@ -54,7 +54,7 @@ public class FoursquareUtil {
 
     public static String getLatLngUrl(double lat, double lng, int radius){
         StringBuilder sb = new StringBuilder(BASE_URL);
-        sb.append("&limit=50");
+        sb.append("&limit=20");
         sb.append("&radius=");
         sb.append(radius);
         sb.append("&client_id=");
