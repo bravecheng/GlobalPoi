@@ -26,6 +26,7 @@ public class GlobalPoiSearch {
 
     private int radius = 3000;
     private PoiSearchListener listener;
+    private Call mCall;
     private Handler mainHandler;
 
     public GlobalPoiSearch(Context context) {
@@ -70,6 +71,9 @@ public class GlobalPoiSearch {
             }
             return;
         }
+        if (mCall != null && mCall.isExecuted()) {
+            mCall.cancel();
+        }
         if (!LbsTool.isInChina(lat, lng)) {
             //如果点在国外，获取Foursquare
             getFoursquareVenues(lat, lng);
@@ -80,23 +84,29 @@ public class GlobalPoiSearch {
     }
 
     public List<GlobalPoi> queryAMapSync(String keywords, String city, int page){
+        if (mCall != null && mCall.isExecuted()) {
+            mCall.cancel();
+        }
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = AMapUtil.getKeywordsUrl(keywords, city, page);
         Request request = new Request.Builder().url(url).method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
+        mCall = okHttpClient.newCall(request);
         try {
-            return parseAMapToList(call.execute());
+            return parseAMapToList(mCall.execute());
         } catch (IOException e) {
         }
         return null;
     }
 
     public void queryAMap(String keywords, String city, int page) {
+        if (mCall != null && mCall.isExecuted()) {
+            mCall.cancel();
+        }
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = AMapUtil.getKeywordsUrl(keywords, city, page);
         Request request = new Request.Builder().url(url).method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        mCall = okHttpClient.newCall(request);
+        mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (listener != null) {
@@ -118,12 +128,15 @@ public class GlobalPoiSearch {
     }
 
     public List<GlobalPoi> queryFoursquareSync(String keywords, String city) {
+        if (mCall != null && mCall.isExecuted()) {
+            mCall.cancel();
+        }
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = FoursquareUtil.getKeywordsUrl(keywords, city);
         Request request = new Request.Builder().url(url).method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
+        mCall = okHttpClient.newCall(request);
         try {
-            return parseFoursquareToList(call.execute());
+            return parseFoursquareToList(mCall.execute());
         } catch (IOException e) {
         }
         return null;
@@ -133,11 +146,14 @@ public class GlobalPoiSearch {
      * 地址使用Foursquare搜索
      */
     public void queryFoursquare(String keywords, String city) {
+        if (mCall != null && mCall.isExecuted()) {
+            mCall.cancel();
+        }
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = FoursquareUtil.getKeywordsUrl(keywords, city);
         Request request = new Request.Builder().url(url).method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        mCall = okHttpClient.newCall(request);
+        mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (listener != null) {
@@ -165,8 +181,8 @@ public class GlobalPoiSearch {
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = AMapUtil.getLatLngUrl(lat, lng, radius, pageIndex);
         Request request = new Request.Builder().url(url).method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        mCall = okHttpClient.newCall(request);
+        mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (listener != null) {
@@ -194,8 +210,8 @@ public class GlobalPoiSearch {
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = FoursquareUtil.getLatLngUrl(lat, lng, radius);
         Request request = new Request.Builder().url(url).method("GET", null).build();
-        Call call = okHttpClient.newCall(request);
-        call.enqueue(new Callback() {
+        mCall = okHttpClient.newCall(request);
+        mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 if (listener != null) {
