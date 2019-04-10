@@ -79,6 +79,18 @@ public class GlobalPoiSearch {
         }
     }
 
+    public List<GlobalPoi> queryAMapSync(String keywords, String city, int page){
+        OkHttpClient okHttpClient = new OkHttpClient();
+        String url = AMapUtil.getKeywordsUrl(keywords, city, page);
+        Request request = new Request.Builder().url(url).method("GET", null).build();
+        Call call = okHttpClient.newCall(request);
+        try {
+            return parseAMapToList(call.execute());
+        } catch (IOException e) {
+        }
+        return null;
+    }
+
     public void queryAMap(String keywords, String city, int page) {
         OkHttpClient okHttpClient = new OkHttpClient();
         String url = AMapUtil.getKeywordsUrl(keywords, city, page);
@@ -100,45 +112,21 @@ public class GlobalPoiSearch {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
-                try {
-                    JSONObject jsonResult = new JSONObject(result);
-                    int responseCode = 0;
-                    String info = "OK";
-                    if (jsonResult.has("infocode")) {
-                        responseCode = jsonResult.optInt("infocode");
-                    }
-                    if (jsonResult.has("info")) {
-                        info = jsonResult.optString("info");
-                    }
-                    //状态码 = 200 表示可用
-                    if (responseCode == 10000 && jsonResult.has("pois") && listener != null) {
-                        final int totalCount = jsonResult.optInt("count") / 20;
-                        final List<GlobalPoi> poiList = AMapUtil.getBeanFromAmap(jsonResult.optString("pois"));
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onPoiSearchSuccess(totalCount, poiList);
-                                listener.onPoiSearchFinish();
-                            }
-                        });
-                    } else {
-                        if (listener != null) {
-                            final int finalResponseCode = responseCode;
-                            final String finalInfo = info;
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onPoiSearchFailed(finalResponseCode, finalInfo);
-                                    listener.onPoiSearchFinish();
-                                }
-                            });
-                        }
-                    }
-                } catch (JSONException e) {
-                }
+                parseAMapToList(response);
             }
         });
+    }
+
+    public List<GlobalPoi> queryFoursquareSync(String keywords, String city) {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        String url = FoursquareUtil.getKeywordsUrl(keywords, city);
+        Request request = new Request.Builder().url(url).method("GET", null).build();
+        Call call = okHttpClient.newCall(request);
+        try {
+            return parseFoursquareToList(call.execute());
+        } catch (IOException e) {
+        }
+        return null;
     }
 
     /**
@@ -165,46 +153,7 @@ public class GlobalPoiSearch {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
-                try {
-                    JSONObject jsonResult = new JSONObject(result);
-                    int responseCode = 0;
-                    String errorType = "OK";
-                    if (jsonResult.has("meta")) {
-                        JSONObject meta = jsonResult.getJSONObject("meta");
-                        if (meta.has("code")) {
-                            responseCode = meta.optInt("code");
-                        }
-                        if (meta.has("errorType")) {
-                            errorType = meta.optString("errorType");
-                        }
-                    }
-                    //状态码 = 200 表示可用
-                    if (responseCode == 200 && jsonResult.has("response") && listener != null) {
-                        JSONObject jsonResponse = jsonResult.getJSONObject("response");
-                        final List<GlobalPoi> poiList = FoursquareUtil.getBeanFromFoursquare(jsonResponse.optString("venues"));
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onPoiSearchSuccess(1, poiList);
-                                listener.onPoiSearchFinish();
-                            }
-                        });
-                    } else {
-                        if (listener != null) {
-                            final int finalResponseCode = responseCode;
-                            final String finalErrorType = errorType;
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onPoiSearchFailed(finalResponseCode, finalErrorType);
-                                    listener.onPoiSearchFinish();
-                                }
-                            });
-                        }
-                    }
-                } catch (JSONException e) {
-                }
+                parseFoursquareToList(response);
             }
         });
     }
@@ -233,43 +182,7 @@ public class GlobalPoiSearch {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
-                try {
-                    JSONObject jsonResult = new JSONObject(result);
-                    int responseCode = 0;
-                    String info = "OK";
-                    if (jsonResult.has("infocode")) {
-                        responseCode = jsonResult.optInt("infocode");
-                    }
-                    if (jsonResult.has("info")) {
-                        info = jsonResult.optString("info");
-                    }
-                    //状态码 = 200 表示可用
-                    if (responseCode == 10000 && jsonResult.has("pois") && listener != null) {
-                        final int totalCount = jsonResult.optInt("count") / 20;
-                        final List<GlobalPoi> poiList = AMapUtil.getBeanFromAmap(jsonResult.optString("pois"));
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onPoiSearchSuccess(totalCount, poiList);
-                                listener.onPoiSearchFinish();
-                            }
-                        });
-                    } else {
-                        if (listener != null) {
-                            final int finalResponseCode = responseCode;
-                            final String finalInfo = info;
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onPoiSearchFailed(finalResponseCode, finalInfo);
-                                    listener.onPoiSearchFinish();
-                                }
-                            });
-                        }
-                    }
-                } catch (JSONException e) {
-                }
+                parseAMapToList(response);
             }
         });
     }
@@ -298,47 +211,99 @@ public class GlobalPoiSearch {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                String result = response.body().string();
-                try {
-                    JSONObject jsonResult = new JSONObject(result);
-                    int responseCode = 0;
-                    String errorType = "OK";
-                    if (jsonResult.has("meta")) {
-                        JSONObject meta = jsonResult.getJSONObject("meta");
-                        if (meta.has("code")) {
-                            responseCode = meta.optInt("code");
-                        }
-                        if (meta.has("errorType")) {
-                            errorType = meta.optString("errorType");
-                        }
-                    }
-                    //状态码 = 200 表示可用
-                    if (responseCode == 200 && jsonResult.has("response") && listener != null) {
-                        JSONObject jsonResponse = jsonResult.getJSONObject("response");
-                        final List<GlobalPoi> poiList = FoursquareUtil.getBeanFromFoursquare(jsonResponse.optString("venues"));
-                        mainHandler.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onPoiSearchSuccess(1, poiList);
-                                listener.onPoiSearchFinish();
-                            }
-                        });
-                    } else {
-                        if (listener != null) {
-                            final int finalResponseCode = responseCode;
-                            final String finalErrorType = errorType;
-                            mainHandler.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    listener.onPoiSearchFailed(finalResponseCode, finalErrorType);
-                                    listener.onPoiSearchFinish();
-                                }
-                            });
-                        }
-                    }
-                } catch (JSONException e) {
-                }
+                parseFoursquareToList(response);
             }
         });
+    }
+
+    private List<GlobalPoi> parseAMapToList(Response response) throws IOException {
+        String result = response.body().string();
+        try {
+            JSONObject jsonResult = new JSONObject(result);
+            int responseCode = 0;
+            String info = "OK";
+            if (jsonResult.has("infocode")) {
+                responseCode = jsonResult.optInt("infocode");
+            }
+            if (jsonResult.has("info")) {
+                info = jsonResult.optString("info");
+            }
+            //状态码 = 200 表示可用
+            if (responseCode == 10000 && jsonResult.has("pois")) {
+                final int totalCount = jsonResult.optInt("count") / 20;
+                final List<GlobalPoi> poiList = AMapUtil.getBeanFromAmap(jsonResult.optString("pois"));
+                if (listener != null) {
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiSearchSuccess(totalCount, poiList);
+                            listener.onPoiSearchFinish();
+                        }
+                    });
+                }
+                return poiList;
+            } else {
+                if (listener != null) {
+                    final int finalResponseCode = responseCode;
+                    final String finalInfo = info;
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiSearchFailed(finalResponseCode, finalInfo);
+                            listener.onPoiSearchFinish();
+                        }
+                    });
+                }
+            }
+        } catch (JSONException e) {
+        }
+        return null;
+    }
+
+    private List<GlobalPoi> parseFoursquareToList(Response response) throws IOException {
+        String result = response.body().string();
+        try {
+            JSONObject jsonResult = new JSONObject(result);
+            int responseCode = 0;
+            String errorType = "OK";
+            if (jsonResult.has("meta")) {
+                JSONObject meta = jsonResult.getJSONObject("meta");
+                if (meta.has("code")) {
+                    responseCode = meta.optInt("code");
+                }
+                if (meta.has("errorType")) {
+                    errorType = meta.optString("errorType");
+                }
+            }
+            //状态码 = 200 表示可用
+            if (responseCode == 200 && jsonResult.has("response")) {
+                JSONObject jsonResponse = jsonResult.getJSONObject("response");
+                final List<GlobalPoi> poiList = FoursquareUtil.getBeanFromFoursquare(jsonResponse.optString("venues"));
+                if (listener != null) {
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiSearchSuccess(1, poiList);
+                            listener.onPoiSearchFinish();
+                        }
+                    });
+                }
+                return poiList;
+            } else {
+                if (listener != null) {
+                    final int finalResponseCode = responseCode;
+                    final String finalErrorType = errorType;
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiSearchFailed(finalResponseCode, finalErrorType);
+                            listener.onPoiSearchFinish();
+                        }
+                    });
+                }
+            }
+        } catch (JSONException e) {
+        }
+        return null;
     }
 }
