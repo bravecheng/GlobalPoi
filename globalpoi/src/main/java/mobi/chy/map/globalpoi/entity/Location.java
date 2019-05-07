@@ -12,13 +12,13 @@ public class Location {
     private double lat;
     private double lng;
     /**
-     * 简单地址描述
+     * 兴趣点距离查询点距离
+     */
+    private int distance;
+    /**
+     * 地址描述
      */
     private String address;
-    /**
-     * 格式化地址输出
-     */
-    private String formattedAddress = "";
     /**
      * 邮政编码，国内基本为空
      */
@@ -64,20 +64,20 @@ public class Location {
         this.lng = lng;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+
     public String getAddress() {
         return address;
     }
 
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    public String getFormattedAddress() {
-        return formattedAddress;
-    }
-
-    public void setFormattedAddress(String formattedAddress) {
-        this.formattedAddress = formattedAddress;
     }
 
     public String getPostalCode() {

@@ -34,10 +34,17 @@
             android:hint="请输入经度，例如 117.187918"/>
 
         <Button
+            android:id="@+id/btn_regeo"
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:layout_marginLeft="10dp"
+            android:text="逆地理" />
+
+        <Button
             android:id="@+id/btn_search"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="10dp"
             android:text="周边点搜索" />
     </LinearLayout>
 
@@ -83,10 +90,16 @@
             android:text="国外" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tv_regeo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/secound"/>
+
     <ListView
         android:id="@+id/lv_poi"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/secound" />
+        android:layout_below="@+id/tv_regeo" />
 
 </RelativeLayout>

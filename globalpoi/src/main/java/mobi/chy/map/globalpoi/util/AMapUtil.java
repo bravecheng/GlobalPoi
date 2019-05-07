@@ -27,6 +27,7 @@ public class AMapUtil {
 
     private static final String AROUND_URL = "http://restapi.amap.com/v3/place/around?";
     private static final String TEXT_URL = "http://restapi.amap.com/v3/place/text?";
+    private static final String REGEO_URL = "https://restapi.amap.com/v3/geocode/regeo?";
     private static final String SHA1_VALUE = "92:88:41:C9:3F:02:61:10:14:C5:AB:3B:2F:7C:F9:8B:49:9B:70:FB";
     private static final String PKG_NAME = "com.iwear.mytracks";
     private static final String AMAP_KEY = "08ef30b749bff6abee13b141ef020b0d";
@@ -81,6 +82,26 @@ public class AMapUtil {
         tm.put("ts", ts);
         tm.put("scode", scode);
         return AROUND_URL + treeMapStr(tm);
+    }
+
+    public static String getDetailUrl(double lat, double lng) {
+        TreeMap<String, String> tm = new TreeMap<>();
+        tm.put("output", "json");
+        tm.put("extensions", "base");
+        tm.put("coordsys", "autonavi");
+        tm.put("language", "zh-CN");
+        tm.put("radius", "3000");
+        tm.put("location", lng + "," + lat);
+        tm.put("key", "" + AMAP_KEY);
+        //生成ts 倒数第1位0~9，倒数第2位0~1
+        String ts = System.currentTimeMillis() + "";
+        Random random = new Random();
+        ts = ts.substring(0, ts.length() - 2) + random.nextInt(2) + random.nextInt(10);
+        //计算scode
+        String scode = getMD5(SHA1_VALUE + ":" + PKG_NAME + ":" + ts.substring(0, ts.length() - 3) + ":" + treeMapStr(tm));
+        tm.put("ts", ts);
+        tm.put("scode", scode);
+        return REGEO_URL + treeMapStr(tm);
     }
 
     /**
@@ -151,18 +172,21 @@ public class AMapUtil {
                 globalPoi.setId(poiJsonResult.optString("id"));
                 globalPoi.setName(poiJsonResult.optString("name"));
                 Location location = new Location();
-                location.setAddress(poiJsonResult.optString("address"));
                 JSONArray postCode = poiJsonResult.optJSONArray("postcode");
                 if (postCode != null && postCode.length() > 0) {
                     location.setPostalCode("" + postCode.optString(0));
                 }
+                location.setDistance(poiJsonResult.optInt("distance"));
                 location.setCityCode(poiJsonResult.optString("citycode"));
                 location.setCountryCode("0086");
                 location.setDistrict(poiJsonResult.optString("adname"));
                 location.setCity(poiJsonResult.optString("cityname"));
                 location.setState(poiJsonResult.optString("pname"));
                 location.setCountry("中国");
-                location.setFormattedAddress(location.getState()+location.getCity()+location.getDistrict()+location.getAddress());
+                location.setAddress(poiJsonResult.optString("pname")
+                        +poiJsonResult.optString("cityname")
+                        +poiJsonResult.optString("adname")
+                        +poiJsonResult.optString("address"));
                 try {
                     String[] latLng = poiJsonResult.optString("location").split(",");
                     location.setLat(Double.valueOf(latLng[1]));
@@ -177,6 +201,32 @@ public class AMapUtil {
         } catch (JSONException e) {
         }
         return globalPois;
+    }
+
+    public static GlobalPoi getRegeoFromAMap(String result, double lat, double lng) {
+        GlobalPoi globalPoi = new GlobalPoi();
+        try {
+            JSONObject regeocode = new JSONObject(result);
+            globalPoi.setId("");
+            globalPoi.setName("");
+            JSONObject addressComponent = regeocode.optJSONObject("addressComponent");
+            Location location = new Location();
+            location.setPostalCode("");
+            location.setCityCode(addressComponent.optString("citycode"));
+            location.setCountryCode("0086");
+            location.setDistrict(addressComponent.optString("district"));
+            location.setCity(addressComponent.optString("city"));
+            location.setState(addressComponent.optString("province"));
+            location.setCountry("中国");
+            location.setAddress(regeocode.optString("formatted_address"));
+            location.setDistance(0);
+            location.setLat(lat);
+            location.setLng(lng);
+            globalPoi.setLocation(location);
+
+        } catch (JSONException e) {
+        }
+        return globalPoi;
     }
 
 }

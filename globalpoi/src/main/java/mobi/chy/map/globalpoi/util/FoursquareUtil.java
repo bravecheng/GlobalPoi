@@ -88,9 +88,8 @@ public class FoursquareUtil {
                         }
                         formatAddr.append(faArray.optString(j));
                     }
-                    location.setFormattedAddress(formatAddr.toString());
+                    location.setAddress(formatAddr.toString());
                 }
-                location.setAddress(locationJsonResult.optString("address"));
                 location.setCountryCode(LbsTool.getCountryCode(locationJsonResult.optString("cc")));
                 location.setCityCode(locationJsonResult.optString("citycode"));
                 location.setPostalCode(locationJsonResult.optString("postalCode"));
@@ -99,6 +98,7 @@ public class FoursquareUtil {
                 location.setCountry(locationJsonResult.optString("country"));
                 location.setLat(locationJsonResult.optDouble("lat"));
                 location.setLng(locationJsonResult.optDouble("lng"));
+                location.setDistance(locationJsonResult.optInt("distance"));
                 globalPoi.setLocation(location);
                 globalPois.add(globalPoi);
             }

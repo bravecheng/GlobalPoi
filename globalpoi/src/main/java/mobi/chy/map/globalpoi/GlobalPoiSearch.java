@@ -25,7 +25,8 @@ import okhttp3.Response;
 public class GlobalPoiSearch {
 
     private int radius = 3000;
-    private PoiSearchListener listener;
+    private PoiSearchListener mPoiSearchListener;
+    private PoiDetailListener mPoiDetailListener;
     private Call mCall;
     private Handler mainHandler;
 
@@ -35,19 +36,59 @@ public class GlobalPoiSearch {
     }
 
     public void setOnPoiSearchListener(PoiSearchListener listener) {
-        this.listener = listener;
+        this.mPoiSearchListener = listener;
+    }
+
+    public void setOnPoiDetailListener(PoiDetailListener listener) {
+        this.mPoiDetailListener = listener;
     }
 
     public interface PoiSearchListener {
         void onPoiSearchSuccess(int totalCount, List<GlobalPoi> poiList);
-
         void onPoiSearchFailed(int errCode, String errDesc);
-
         void onPoiSearchFinish();
+    }
+
+    public interface PoiDetailListener {
+        void onPoiDetailSuccess(GlobalPoi globalPoi);
+        void onPoiDetailFailed(int errCode, String errDesc);
+        void onPoiDetailFinish();
     }
 
     public void setRadius(int radius) {
         this.radius = radius;
+    }
+
+    /**
+     *  根据经纬度查询详细地址信息
+     *
+     * @param lat
+     * @param lng
+     */
+    public void queryDetail(double lat, double lng) {
+        //验证经纬度合法性
+        if (!LbsTool.isVerifyPass(lat, lng)) {
+            if (mPoiDetailListener != null) {
+                mainHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPoiDetailListener.onPoiDetailFailed(-300, "lat or lng error!");
+                        mPoiDetailListener.onPoiDetailFinish();
+                    }
+                });
+            }
+            return;
+        }
+        if (mCall != null && mCall.isExecuted()) {
+            mCall.cancel();
+        }
+        if (!LbsTool.isInChina(lat, lng)) {
+            //如果点在国外，获取Foursquare
+            getFoursquareDetail(lat, lng);
+        } else {
+            //如果点在国内，获取高德
+            getAMapDetail(lat, lng);
+        }
     }
 
     /**
@@ -60,12 +101,12 @@ public class GlobalPoiSearch {
     public void queryLatLng(double lat, double lng, int pageIndex) {
         //验证经纬度合法性
         if (!LbsTool.isVerifyPass(lat, lng)) {
-            if (listener != null) {
+            if (mPoiSearchListener != null) {
                 mainHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        listener.onPoiSearchFailed(-300, "lat or lng error!");
-                        listener.onPoiSearchFinish();
+                        mPoiSearchListener.onPoiSearchFailed(-300, "lat or lng error!");
+                        mPoiSearchListener.onPoiSearchFinish();
                     }
                 });
             }
@@ -92,7 +133,7 @@ public class GlobalPoiSearch {
         Request request = new Request.Builder().url(url).method("GET", null).build();
         mCall = okHttpClient.newCall(request);
         try {
-            return parseAMapToList(mCall.execute());
+            return parseAMapToList(mCall.execute(), null);
         } catch (IOException e) {
         }
         return null;
@@ -109,12 +150,12 @@ public class GlobalPoiSearch {
         mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (listener != null) {
+                if (mPoiSearchListener != null) {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onPoiSearchFailed(-200, "network error!");
-                            listener.onPoiSearchFinish();
+                            mPoiSearchListener.onPoiSearchFailed(-200, "network error!");
+                            mPoiSearchListener.onPoiSearchFinish();
                         }
                     });
                 }
@@ -122,7 +163,7 @@ public class GlobalPoiSearch {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                parseAMapToList(response);
+                parseAMapToList(response, mPoiSearchListener);
             }
         });
     }
@@ -136,7 +177,7 @@ public class GlobalPoiSearch {
         Request request = new Request.Builder().url(url).method("GET", null).build();
         mCall = okHttpClient.newCall(request);
         try {
-            return parseFoursquareToList(mCall.execute());
+            return parseFoursquareToList(mCall.execute(), null);
         } catch (IOException e) {
         }
         return null;
@@ -156,12 +197,12 @@ public class GlobalPoiSearch {
         mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (listener != null) {
+                if (mPoiSearchListener != null) {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onPoiSearchFailed(-200, "network error!");
-                            listener.onPoiSearchFinish();
+                            mPoiSearchListener.onPoiSearchFailed(-200, "network error!");
+                            mPoiSearchListener.onPoiSearchFinish();
                         }
                     });
                 }
@@ -169,7 +210,7 @@ public class GlobalPoiSearch {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                parseFoursquareToList(response);
+                parseFoursquareToList(response, mPoiSearchListener);
             }
         });
     }
@@ -185,12 +226,12 @@ public class GlobalPoiSearch {
         mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (listener != null) {
+                if (mPoiSearchListener != null) {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onPoiSearchFailed(-200, "network error!");
-                            listener.onPoiSearchFinish();
+                            mPoiSearchListener.onPoiSearchFailed(-200, "network error!");
+                            mPoiSearchListener.onPoiSearchFinish();
                         }
                     });
                 }
@@ -198,7 +239,7 @@ public class GlobalPoiSearch {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                parseAMapToList(response);
+                parseAMapToList(response, mPoiSearchListener);
             }
         });
     }
@@ -214,12 +255,12 @@ public class GlobalPoiSearch {
         mCall.enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                if (listener != null) {
+                if (mPoiSearchListener != null) {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listener.onPoiSearchFailed(-200, "network error!");
-                            listener.onPoiSearchFinish();
+                            mPoiSearchListener.onPoiSearchFailed(-200, "network error!");
+                            mPoiSearchListener.onPoiSearchFinish();
                         }
                     });
                 }
@@ -227,12 +268,114 @@ public class GlobalPoiSearch {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                parseFoursquareToList(response);
+                parseFoursquareToList(response, mPoiSearchListener);
             }
         });
     }
 
-    private List<GlobalPoi> parseAMapToList(Response response) throws IOException {
+
+    /**
+     * 国内坐标使用AMap搜索逆地理
+     */
+    private void getAMapDetail(final double lat, final double lng) {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        String url = AMapUtil.getDetailUrl(lat, lng);
+        Request request = new Request.Builder().url(url).method("GET", null).build();
+        mCall = okHttpClient.newCall(request);
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (mPoiDetailListener != null) {
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPoiDetailListener.onPoiDetailFailed(-200, "network error!");
+                            mPoiDetailListener.onPoiDetailFinish();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                parseAMapToBean(lat, lng, response, mPoiDetailListener);
+            }
+        });
+    }
+
+    /**
+     * 国外坐标使用Foursquare搜索逆地理
+     */
+    private void getFoursquareDetail(double lat, double lng) {
+        OkHttpClient okHttpClient = new OkHttpClient();
+        String url = FoursquareUtil.getLatLngUrl(lat, lng, radius);
+        Request request = new Request.Builder().url(url).method("GET", null).build();
+        mCall = okHttpClient.newCall(request);
+        mCall.enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                if (mPoiDetailListener != null) {
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            mPoiDetailListener.onPoiDetailFailed(-200, "network error!");
+                            mPoiDetailListener.onPoiDetailFinish();
+                        }
+                    });
+                }
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                parseFoursquareToBean(response, mPoiDetailListener);
+            }
+        });
+    }
+
+    private GlobalPoi parseAMapToBean(double lat, double lng, Response response, final PoiDetailListener listener) throws IOException {
+        String result = response.body().string();
+        try {
+            JSONObject jsonResult = new JSONObject(result);
+            int responseCode = 0;
+            String info = "OK";
+            if (jsonResult.has("infocode")) {
+                responseCode = jsonResult.optInt("infocode");
+            }
+            if (jsonResult.has("info")) {
+                info = jsonResult.optString("info");
+            }
+            //状态码 = 200 表示可用
+            if (responseCode == 10000 && jsonResult.has("regeocode")) {
+                final GlobalPoi globalPoi = AMapUtil.getRegeoFromAMap(jsonResult.optString("regeocode"), lat, lng);
+                if (listener != null) {
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiDetailSuccess(globalPoi);
+                            listener.onPoiDetailFinish();
+                        }
+                    });
+                }
+                return globalPoi;
+            } else {
+                if (listener != null) {
+                    final int finalResponseCode = responseCode;
+                    final String finalInfo = info;
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiDetailFailed(finalResponseCode, finalInfo);
+                            listener.onPoiDetailFinish();
+                        }
+                    });
+                }
+            }
+        } catch (JSONException e) {
+        }
+        return null;
+    }
+
+    private List<GlobalPoi> parseAMapToList(Response response, final PoiSearchListener listener) throws IOException {
         String result = response.body().string();
         try {
             JSONObject jsonResult = new JSONObject(result);
@@ -276,7 +419,62 @@ public class GlobalPoiSearch {
         return null;
     }
 
-    private List<GlobalPoi> parseFoursquareToList(Response response) throws IOException {
+    private GlobalPoi parseFoursquareToBean(Response response, final PoiDetailListener listener) throws IOException {
+        String result = response.body().string();
+        try {
+            JSONObject jsonResult = new JSONObject(result);
+            int responseCode = 0;
+            String errorType = "OK";
+            if (jsonResult.has("meta")) {
+                JSONObject meta = jsonResult.getJSONObject("meta");
+                if (meta.has("code")) {
+                    responseCode = meta.optInt("code");
+                }
+                if (meta.has("errorType")) {
+                    errorType = meta.optString("errorType");
+                }
+            }
+            //状态码 = 200 表示可用
+            if (responseCode == 200 && jsonResult.has("response")) {
+                JSONObject jsonResponse = jsonResult.getJSONObject("response");
+                final List<GlobalPoi> poiList = FoursquareUtil.getBeanFromFoursquare(jsonResponse.optString("venues"));
+                GlobalPoi globalPoi = null;
+                for (GlobalPoi poi: poiList) {
+                    if (globalPoi == null || globalPoi.getLocation().getDistance() > poi.getLocation().getDistance()) {
+                        globalPoi = poi;
+                    }
+                }
+                globalPoi.getLocation().setDistance(0);
+                final GlobalPoi finalPoi = globalPoi;
+                if (listener != null) {
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiDetailSuccess(finalPoi);
+                            listener.onPoiDetailFinish();
+                        }
+                    });
+                }
+                return globalPoi;
+            } else {
+                if (listener != null) {
+                    final int finalResponseCode = responseCode;
+                    final String finalErrorType = errorType;
+                    mainHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onPoiDetailFailed(finalResponseCode, finalErrorType);
+                            listener.onPoiDetailFinish();
+                        }
+                    });
+                }
+            }
+        } catch (JSONException e) {
+        }
+        return null;
+    }
+
+    private List<GlobalPoi> parseFoursquareToList(Response response, final PoiSearchListener listener) throws IOException {
         String result = response.body().string();
         try {
             JSONObject jsonResult = new JSONObject(result);

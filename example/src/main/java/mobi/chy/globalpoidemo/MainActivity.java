@@ -17,14 +17,15 @@ import java.util.List;
 import mobi.chy.map.globalpoi.entity.GlobalPoi;
 import mobi.chy.map.globalpoi.GlobalPoiSearch;
 
-public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.PoiSearchListener {
+public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.PoiSearchListener, GlobalPoiSearch.PoiDetailListener {
 
     private EditText etLat;
     private EditText etLng;
-    private Button btnSearch;
+    private Button btnRegeo,btnSearch;
     private EditText etKeyword;
     private EditText etCity;
     private Button btnInside, btnOutside;
+    private TextView tvRegeo;
     private ListView lvPoi;
     GlobalPoiSearch globalPoiSearch;
     PoiListAdapter mAdapter;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
         setContentView(R.layout.activity_main);
         etLat = findViewById(R.id.lat);
         etLng = findViewById(R.id.lng);
+        btnRegeo = findViewById(R.id.btn_regeo);
         btnSearch = findViewById(R.id.btn_search);
 
         etKeyword = findViewById(R.id.et_keyword);
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
         btnInside = findViewById(R.id.btn_inside);
         btnOutside = findViewById(R.id.btn_outside);
 
+        tvRegeo= findViewById(R.id.tv_regeo);
         lvPoi = findViewById(R.id.lv_poi);
 
         mAdapter = new PoiListAdapter();
@@ -49,7 +52,20 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
 
         globalPoiSearch = new GlobalPoiSearch(this);
         globalPoiSearch.setOnPoiSearchListener(this);
+        globalPoiSearch.setOnPoiDetailListener(this);
 
+        btnRegeo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    double lat = Double.parseDouble(etLat.getText().toString());
+                    double lng = Double.parseDouble(etLng.getText().toString());
+                    globalPoiSearch.queryDetail(lat, lng);
+                } catch (NumberFormatException e) {
+                    Toast.makeText(MainActivity.this, "输入不合法", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
         btnSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,6 +111,23 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
 
     }
 
+    @Override
+    public void onPoiDetailSuccess(GlobalPoi itemPoi) {
+        tvRegeo.setText("[" + itemPoi.getLocation().getCountry() + "]-"
+                + "[" + itemPoi.getLocation().getState() + "]-"
+                + "[" + itemPoi.getLocation().getCity() + "]" + itemPoi.getName() +"\n" + itemPoi.getLocation().getAddress());
+    }
+
+    @Override
+    public void onPoiDetailFailed(int errCode, String errDesc) {
+
+    }
+
+    @Override
+    public void onPoiDetailFinish() {
+
+    }
+
 
     private class PoiListAdapter extends BaseAdapter {
 
@@ -134,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements GlobalPoiSearch.P
             holder.title.setText("[" + itemPoi.getLocation().getCountry() + "]-"
                     + "[" + itemPoi.getLocation().getState() + "]-"
                     + "[" + itemPoi.getLocation().getCity() + "]" + itemPoi.getName());
-            holder.address.setText(itemPoi.getLocation().getFormattedAddress());
+            holder.address.setText(itemPoi.getLocation().getAddress());
             return view;
         }
     }
